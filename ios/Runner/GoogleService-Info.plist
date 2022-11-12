@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>701151356092-oscot44js89kejvv96r1a4je5jvid0tt.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.701151356092-oscot44js89kejvv96r1a4je5jvid0tt</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCFcN_NEmPaG8ZTsQJVxkmZ4PIkT6qpR0E</string>
+	<key>GCM_SENDER_ID</key>
+	<string>701151356092</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>app.notidy.notidy</string>
+	<key>PROJECT_ID</key>
+	<string>notidy-notes</string>
+	<key>STORAGE_BUCKET</key>
+	<string>notidy-notes.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:701151356092:ios:93f805a2f588aaa4db5cb9</string>
+</dict>
+</plist>

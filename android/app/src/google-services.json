@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "701151356092",
+    "project_id": "notidy-notes",
+    "storage_bucket": "notidy-notes.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701151356092:android:d54d4cb2e67280c4db5cb9",
+        "android_client_info": {
+          "package_name": "app.notidy.notidy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "701151356092-7n39261s06vqhdndk047ibsbb1je8k8d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDW85aC0YAqSzI30XoL7Wwg_96WXvb84zo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "701151356092-7n39261s06vqhdndk047ibsbb1je8k8d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "701151356092-oscot44js89kejvv96r1a4je5jvid0tt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.notidy.notidy"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
