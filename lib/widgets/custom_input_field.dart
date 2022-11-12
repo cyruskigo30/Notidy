@@ -8,12 +8,14 @@ class CustomInputField extends StatelessWidget {
     required this.labelText,
     required this.obscureText,
     this.suffixIcon,
+    required this.textfieldController,
   }) : super(key: key);
   final IconData icon;
   final IconData? suffixIcon;
   final String? hintText;
   final String? labelText;
   final bool obscureText;
+  final TextEditingController textfieldController;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class CustomInputField extends StatelessWidget {
     return SizedBox(
       width: size.width * .9,
       child: TextField(
+        controller: textfieldController,
         textCapitalization: TextCapitalization.sentences,
         obscureText: obscureText,
         decoration: InputDecoration(
