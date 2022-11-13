@@ -7,13 +7,36 @@ import 'social_media_signup.dart';
 import '../../../widgets/widget_seperator.dart';
 import '../../components/upside.dart';
 
-class SignUpBody extends StatelessWidget {
+class SignUpBody extends StatefulWidget {
   const SignUpBody({Key? key}) : super(key: key);
 
   @override
+  State<SignUpBody> createState() => _SignUpBodyState();
+}
+
+class _SignUpBodyState extends State<SignUpBody> {
+  ///create text controllers that receive the user entered text
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  ///initializing the state that allows the reception of this data
+  @override
+  void initState() {
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    super.initState();
+  }
+
+  ///after initializing them, they must also be disposed once used
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       physics: const BouncingScrollPhysics(),
@@ -39,7 +62,7 @@ class SignUpBody extends StatelessWidget {
                 ///Email address text field
                 const WidgetSeperator(),
                 CustomInputField(
-                  textfieldController: emailController,
+                  textfieldController: _emailController,
                   icon: Icons.email_outlined,
                   labelText: 'Email Address',
                   hintText: 'Enter your email address',
@@ -49,7 +72,7 @@ class SignUpBody extends StatelessWidget {
 
                 ///Password textfield
                 CustomInputField(
-                  textfieldController: passwordController,
+                  textfieldController: _passwordController,
                   icon: Icons.lock_outlined,
                   labelText: 'Password',
                   hintText: 'Enter your password',

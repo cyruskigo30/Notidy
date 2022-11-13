@@ -9,13 +9,36 @@ import '../../components/upside.dart';
 import '../../components/title_bar.dart';
 import '../signup/signup_screen.dart';
 
-class SignInBody extends StatelessWidget {
+class SignInBody extends StatefulWidget {
   const SignInBody({Key? key}) : super(key: key);
 
   @override
+  State<SignInBody> createState() => _SignInBodyState();
+}
+
+class _SignInBodyState extends State<SignInBody> {
+  ///Create variables to hold received signin details
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  ///Initialize the state of receiving the info
+  @override
+  void initState() {
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    super.initState();
+  }
+
+  ///after initializing them, they must also be disposed once used
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
     Size size = MediaQuery.of(context).size;
     return SizedBox(
       height: size.height,
@@ -38,7 +61,7 @@ class SignInBody extends StatelessWidget {
               labelText: 'Email Address',
               hintText: 'Enter your email address',
               obscureText: false,
-              textfieldController: emailController,
+              textfieldController: _emailController,
             ),
             const WidgetSeperator(),
 
@@ -49,7 +72,7 @@ class SignInBody extends StatelessWidget {
               hintText: 'Enter your password',
               suffixIcon: Icons.visibility_outlined,
               obscureText: true,
-              textfieldController: passwordController,
+              textfieldController: _passwordController,
             ),
 
             /// Remember me feature
