@@ -9,6 +9,7 @@ class CustomInputField extends StatelessWidget {
     required this.obscureText,
     this.suffixIcon,
     required this.textfieldController,
+    required this.keyboardType,
   }) : super(key: key);
   final IconData icon;
   final IconData? suffixIcon;
@@ -16,13 +17,16 @@ class CustomInputField extends StatelessWidget {
   final String? labelText;
   final bool obscureText;
   final TextEditingController textfieldController;
-
+  final TextInputType keyboardType;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
       width: size.width * .9,
       child: TextField(
+        keyboardType: keyboardType,
+        enableSuggestions: false,
+        autocorrect: false,
         controller: textfieldController,
         textCapitalization: TextCapitalization.sentences,
         obscureText: obscureText,

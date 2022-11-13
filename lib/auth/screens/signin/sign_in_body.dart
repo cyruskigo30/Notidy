@@ -57,6 +57,7 @@ class _SignInBodyState extends State<SignInBody> {
 
             ///Form containing log in email details
             CustomInputField(
+              keyboardType: TextInputType.emailAddress,
               icon: Icons.email_outlined,
               labelText: 'Email Address',
               hintText: 'Enter your email address',
@@ -73,6 +74,7 @@ class _SignInBodyState extends State<SignInBody> {
               suffixIcon: Icons.visibility_outlined,
               obscureText: true,
               textfieldController: _passwordController,
+              keyboardType: TextInputType.visiblePassword,
             ),
 
             /// Remember me feature

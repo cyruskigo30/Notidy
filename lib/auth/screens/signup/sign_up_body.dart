@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../utils/constants/constants.dart';
 import '../../../widgets/custom_input_field.dart';
@@ -67,11 +70,13 @@ class _SignUpBodyState extends State<SignUpBody> {
                   labelText: 'Email Address',
                   hintText: 'Enter your email address',
                   obscureText: false,
+                  keyboardType: TextInputType.emailAddress,
                 ),
                 const WidgetSeperator(),
 
                 ///Password textfield
                 CustomInputField(
+                  keyboardType: TextInputType.visiblePassword,
                   textfieldController: _passwordController,
                   icon: Icons.lock_outlined,
                   labelText: 'Password',
@@ -81,13 +86,19 @@ class _SignUpBodyState extends State<SignUpBody> {
                 ),
                 const WidgetSeperator(),
 
-                const WidgetSeperator(),
-
                 /// Sign up Button
                 PrimaryButton(
                   icon: Icons.keyboard_arrow_up_outlined,
                   text: 'Sign Up',
                   onClick: () async {
+                    final email = _emailController.text;
+                    final password = _passwordController.text;
+                    final UserCredential = await FirebaseAuth.instance
+                        .createUserWithEmailAndPassword(
+                      email: email,
+                      password: password,
+                    );
+                    log('$UserCredential');
                     Navigator.pushNamed(context, SignInScreen.routeName);
                   },
                 ),
