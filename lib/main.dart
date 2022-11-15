@@ -4,6 +4,7 @@ import 'auth/screens/splash/splash_screen.dart';
 import 'utils/theme/recipia_theme.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
