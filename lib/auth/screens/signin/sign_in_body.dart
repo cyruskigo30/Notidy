@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:notidy/firebase_options.dart';
 import '../../../home/Dashboard/main_dashboard.dart';
 import '../../../utils/constants/constants.dart';
 import '../../../utils/theme/colors.dart';
@@ -44,96 +47,125 @@ class _SignInBodyState extends State<SignInBody> {
       height: size.height,
       width: size.width,
       child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            /// container holding the login image
-            const Upside(
-              imgUrl: "assets/images/signin.svg",
-            ),
+        child: FutureBuilder(
+          future: Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform,
+          ),
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+                // TODO: Handle this case.
+                break;
+              case ConnectionState.waiting:
+                // TODO: Handle this case.
+                break;
+              case ConnectionState.active:
+                // TODO: Handle this case.
+                break;
+              case ConnectionState.done:
+                // TODO: Handle this case.
+                break;
+              default:
+            }
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                /// container holding the login image
+                const Upside(
+                  imgUrl: "assets/images/signin.svg",
+                ),
 
-            ///Title bar holding the log in text and social icons
-            const AuthTitleBar(),
+                ///Title bar holding the log in text and social icons
+                const AuthTitleBar(),
 
-            ///Form containing log in email details
-            CustomInputField(
-              keyboardType: TextInputType.emailAddress,
-              icon: Icons.email_outlined,
-              labelText: 'Email Address',
-              hintText: 'Enter your email address',
-              obscureText: false,
-              textfieldController: _emailController,
-            ),
-            const WidgetSeperator(),
+                ///Form containing log in email details
+                CustomInputField(
+                  keyboardType: TextInputType.emailAddress,
+                  icon: Icons.email_outlined,
+                  labelText: 'Email Address',
+                  hintText: 'Enter your email address',
+                  obscureText: false,
+                  textfieldController: _emailController,
+                ),
+                const WidgetSeperator(),
 
-            ///Password textfield
-            CustomInputField(
-              icon: Icons.lock_outlined,
-              labelText: 'Password',
-              hintText: 'Enter your password',
-              suffixIcon: Icons.visibility_outlined,
-              obscureText: true,
-              textfieldController: _passwordController,
-              keyboardType: TextInputType.visiblePassword,
-            ),
+                ///Password textfield
+                CustomInputField(
+                  icon: Icons.lock_outlined,
+                  labelText: 'Password',
+                  hintText: 'Enter your password',
+                  suffixIcon: Icons.visibility_outlined,
+                  obscureText: true,
+                  textfieldController: _passwordController,
+                  keyboardType: TextInputType.visiblePassword,
+                ),
 
-            /// Remember me feature
-            SwitchListTile(
-              value: true,
-              activeColor: kPrimaryColor,
-              onChanged: (val) {},
-              dense: true,
-              title: Text(
-                'Remember me',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-            const WidgetSeperator(),
-
-            /// Sign in Button
-            Container(
-              margin:
-                  const EdgeInsets.symmetric(horizontal: kDefaultScreenMargin),
-              child: PrimaryButton(
-                  icon: Icons.keyboard_arrow_up_outlined,
-                  text: 'Sign In',
-                  onClick: () {
-                    Navigator.pushNamed(context, MainDashboard.routeName);
-                  }),
-            ),
-            const WidgetSeperator(),
-
-            /// Forgot password
-            Container(
-              margin:
-                  const EdgeInsets.symmetric(horizontal: kDefaultScreenMargin),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, SignUpScreen.routeName);
-                    },
-                    child: Text(
-                        textAlign: TextAlign.end,
-                        'No Account ? Sign Up',
-                        style: Theme.of(context).textTheme.bodyLarge),
+                /// Remember me feature
+                SwitchListTile(
+                  value: true,
+                  activeColor: kPrimaryColor,
+                  onChanged: (val) {},
+                  dense: true,
+                  title: Text(
+                    'Remember me',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      textAlign: TextAlign.end,
-                      'Forgot Password?',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(color: kPrimaryColor),
-                    ),
+                ),
+                const WidgetSeperator(),
+
+                /// Sign in Button
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: kDefaultScreenMargin),
+                  child: PrimaryButton(
+                      icon: Icons.keyboard_arrow_up_outlined,
+                      text: 'Sign In',
+                      onClick: () async {
+                        final email = _emailController.text;
+                        final password = _passwordController.text;
+                        final UserCredential = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
+                          email: email,
+                          password: password,
+                        );
+                        Navigator.pushNamed(context, MainDashboard.routeName);
+                      }),
+                ),
+                const WidgetSeperator(),
+
+                /// Forgot password
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: kDefaultScreenMargin),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, SignUpScreen.routeName);
+                        },
+                        child: Text(
+                            textAlign: TextAlign.end,
+                            'No Account ? Sign Up',
+                            style: Theme.of(context).textTheme.bodyLarge),
+                      ),
+                      TextButton(
+                        onPressed: () {},
+                        child: Text(
+                          textAlign: TextAlign.end,
+                          'Forgot Password?',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(color: kPrimaryColor),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ],
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

@@ -14,7 +14,7 @@ class SplashSlider extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'Recipia',
+          'Notidy',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 color: kPrimaryColor,
                 fontSize: 35,
