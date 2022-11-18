@@ -72,16 +72,6 @@ class _SignUpBodyState extends State<SignUpBody> {
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
 
-                  ///other case scenarios
-                  // case ConnectionState.none:
-                  //   // TODO: Handle this case.
-                  //   break;
-                  // case ConnectionState.waiting:
-                  //   // TODO: Handle this case.
-                  //   break;
-                  // case ConnectionState.active:
-                  //   // TODO: Handle this case.
-                  //   break;
                   ///when the connection state is done return the UI
                   case ConnectionState.done:
                     return Column(
@@ -119,14 +109,38 @@ class _SignUpBodyState extends State<SignUpBody> {
                             final email = _emailController.text;
                             final password = _passwordController.text;
 
-                            ///Initialize firebase to be ready to receive the content
                             ///Assign the firebase assigned default credentials variable  (UserCredential) to the received variables
-                            final UserCredential = await FirebaseAuth.instance
-                                .createUserWithEmailAndPassword(
-                              email: email,
-                              password: password,
-                            );
-                            log('$UserCredential');
+                            try {
+                              final UserCredential = await FirebaseAuth.instance
+                                  .createUserWithEmailAndPassword(
+                                email: email,
+                                password: password,
+                              );
+                            } on FirebaseAuthException catch (e) {
+                              // log(e.code);
+                              if (e.code == 'email-already-in-use') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                        Text('Email Address Already in use'),
+                                  ),
+                                );
+                              } else if (e.code == 'invalid-email') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Invalid Email Address'),
+                                  ),
+                                );
+                              } else if (e.code == 'weak-password') {
+                                log('Weak Passsword, Please try Another');
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Weak Passsword, Please try Another'),
+                                  ),
+                                );
+                              }
+                            }
 
                             ///if registration is successful, Send the user to the sign in page otherwise show error
                             // Navigator.pushNamed(

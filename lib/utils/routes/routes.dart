@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notidy/auth/components/firebase_initializer.dart';
 import '../../home/modules/recipes/recipes_screen.dart';
 import '../../home/Dashboard/main_dashboard.dart';
 import '../../auth/screens/signin/sign_in_screen.dart';
@@ -13,4 +14,5 @@ final Map<String, WidgetBuilder> routes = {
   MainDashboard.routeName: (context) => const MainDashboard(),
 
   RecipesScreen.routeName: (context) => const RecipesScreen(),
+  AppInitializer.routeName: (context) => const AppInitializer(),
 };
