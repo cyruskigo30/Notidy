@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:notidy/auth/screens/signin/sign_in_screen.dart';
 import 'package:notidy/auth/screens/splash/splash_screen.dart';
 import 'package:notidy/firebase_options.dart';
 
@@ -28,10 +29,13 @@ class AppInitializer extends StatelessWidget {
             ///if the appUser?.emailVerified exists take it if not take the false
             final emailVerified = appUser?.emailVerified ?? false;
             if (emailVerified) {
+              ///Go to login page
               log('You are a verified User');
-              return const SplashScreen();
+              return const SignInScreen();
             } else {
               log('Please Verify your account first to proceed');
+
+              ///Go to email verification screen
             }
             return const SplashScreen();
 
