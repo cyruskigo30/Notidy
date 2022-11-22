@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notidy/auth/components/firebase_initializer.dart';
 import 'utils/routes/routes.dart';
-import 'auth/screens/splash/splash_screen.dart';
 import 'utils/theme/recipia_theme.dart';
 
 void main() {
