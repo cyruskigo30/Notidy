@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../utils/constants/constants.dart';
 import '../../../widgets/primary_button.dart';
@@ -28,8 +27,14 @@ class _VerifyEmailBodyState extends State<VerifyEmailBody> {
 
           const WidgetSeperator(),
           Text(
-            'Please verify your email address',
-            style: Theme.of(context).textTheme.headline1,
+            'Click to Verify email',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const WidgetSeperator(),
+          Text(
+            'An email verification link will be sent to your email address.',
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
           ),
           const WidgetSeperator(),
 

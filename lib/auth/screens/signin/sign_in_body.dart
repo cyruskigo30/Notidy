@@ -141,10 +141,6 @@ class _SignInBodyState extends State<SignInBody> {
                           SignUpScreen.routeName,
                           (route) => false,
                         ),
-                        // onPressed: (() => Navigator.pushNamed(
-                        //       context,
-                        //       SignUpScreen.routeName,
-                        //     )),
                         child: Text(
                           'Sign Up',
                           style: Theme.of(context)
