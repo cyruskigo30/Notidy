@@ -1,6 +1,6 @@
+import 'dart:developer' as app show log;
+
 import 'package:flutter/material.dart';
-import 'package:notidy/utils/constants/constants.dart';
-import 'package:notidy/utils/theme/colors.dart';
 import '../../widgets/custom_bottom_navigation.dart';
 import 'notes_dashboard_body.dart';
 import 'customer_drawer.dart';
@@ -15,10 +15,9 @@ class NotesDashboardScreen extends StatefulWidget {
 
 ///enums to be used in th epopup menu
 enum DashboardAction {
-  Signout,
-  Settings,
-  New,
-  DisplayMode,
+  signout,
+  settings,
+  add,
 }
 
 class _NotesDashboardScreenState extends State<NotesDashboardScreen> {
@@ -42,46 +41,49 @@ class _NotesDashboardScreenState extends State<NotesDashboardScreen> {
               Icons.notifications_outlined,
             ),
           ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.light_mode_outlined,
+            ),
+          ),
           PopupMenuButton<DashboardAction>(
-            onSelected: (value) {},
+            onSelected: (value) {
+              app.log('$value');
+            },
             itemBuilder: (context) {
               return [
                 PopupMenuItem<DashboardAction>(
-                  value: DashboardAction.New,
+                  value: DashboardAction.add,
                   child: ListTile(
-                    tileColor: Theme.of(context).cardColor,
-                    selectedTileColor: kPrimaryColor,
                     trailing: const Icon(Icons.keyboard_arrow_right_outlined),
                     leading: const Icon(Icons.add),
                     title: Text(
                       'New',
-                      style: Theme.of(context).textTheme.titleSmall,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    // subtitle: Text(
-                    //   'Create a new note',
-                    //   style: Theme.of(context).textTheme.bodySmall,
-                    // ),
                   ),
                 ),
-                const PopupMenuItem<DashboardAction>(
-                  value: DashboardAction.DisplayMode,
+                PopupMenuItem<DashboardAction>(
+                  value: DashboardAction.settings,
                   child: ListTile(
-                    leading: Icon(Icons.light_mode_outlined),
-                    title: Text('Display'),
+                    trailing: const Icon(Icons.keyboard_arrow_right_outlined),
+                    leading: const Icon(Icons.settings_outlined),
+                    title: Text(
+                      'Settings',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                   ),
                 ),
-                const PopupMenuItem<DashboardAction>(
-                  value: DashboardAction.Settings,
+                PopupMenuItem<DashboardAction>(
+                  value: DashboardAction.signout,
                   child: ListTile(
-                    leading: Icon(Icons.settings_outlined),
-                    title: Text('Settings'),
-                  ),
-                ),
-                const PopupMenuItem<DashboardAction>(
-                  value: DashboardAction.Signout,
-                  child: ListTile(
-                    leading: Icon(Icons.power_settings_new_rounded),
-                    title: Text('Signout'),
+                    trailing: const Icon(Icons.keyboard_arrow_right_outlined),
+                    leading: const Icon(Icons.power_settings_new_rounded),
+                    title: Text(
+                      'Signout',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                   ),
                 ),
               ];
