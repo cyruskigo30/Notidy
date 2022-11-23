@@ -123,6 +123,13 @@ class _SignUpBodyState extends State<SignUpBody> {
                             content: Text('Weak Passsword, Please try Another'),
                           ),
                         );
+                      } else if (e.code == 'unknown') {
+                        log('Ensure all details are provided');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Ensure all details are provided'),
+                          ),
+                        );
                       }
                     }
 

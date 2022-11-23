@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../home/Dashboard/main_dashboard.dart';
+import '../../home/Dashboard/notes_dashboard_screen.dart';
 import '../../widgets/svg_icon_button.dart';
 
 class AuthTitleBar extends StatelessWidget {
@@ -32,19 +32,19 @@ class AuthTitleBar extends StatelessWidget {
             children: [
               SvgIconButton(
                 buttonAction: () {
-                  Navigator.pushNamed(context, MainDashboard.routeName);
+                  Navigator.pushNamed(context, NotesDashboardScreen.routeName);
                 },
                 iconUrl: 'assets/images/facebook-svgrepo-com.svg',
               ),
               SvgIconButton(
                 buttonAction: () {
-                  Navigator.pushNamed(context, MainDashboard.routeName);
+                  Navigator.pushNamed(context, NotesDashboardScreen.routeName);
                 },
                 iconUrl: 'assets/images/google-svgrepo-com.svg',
               ),
               SvgIconButton(
                 buttonAction: () {
-                  Navigator.pushNamed(context, MainDashboard.routeName);
+                  Navigator.pushNamed(context, NotesDashboardScreen.routeName);
                 },
                 iconUrl: 'assets/images/twitter-svgrepo-com.svg',
               ),

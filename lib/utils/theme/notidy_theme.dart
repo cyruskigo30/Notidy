@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../constants/constants.dart';
 import 'colors.dart';
 
-class RecipiaTheme {
+class NotidyTheme {
   static TextTheme lightTextTheme = const TextTheme(
     bodySmall: TextStyle(
       color: kLightTextColor,

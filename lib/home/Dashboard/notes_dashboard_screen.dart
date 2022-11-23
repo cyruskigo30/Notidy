@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../widgets/custom_bottom_navigation.dart';
-import 'main_body.dart';
+import 'notes_dashboard_body.dart';
 import 'customer_drawer.dart';
 
-class MainDashboard extends StatelessWidget {
-  const MainDashboard({Key? key}) : super(key: key);
-  static String routeName = '/main_dashboard';
+class NotesDashboardScreen extends StatelessWidget {
+  const NotesDashboardScreen({Key? key}) : super(key: key);
+  static String routeName = '/notes_dashboard';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Recipia',
+          'Notidy',
         ),
         actions: [
           IconButton(

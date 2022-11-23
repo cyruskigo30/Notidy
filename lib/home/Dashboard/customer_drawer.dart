@@ -1,6 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../auth/screens/splash/splash_screen.dart';
-import 'main_dashboard.dart';
+import 'notes_dashboard_screen.dart';
 import '../../utils/constants/constants.dart';
 import '../../utils/theme/colors.dart';
 import '../../widgets/add_divider.dart';
@@ -46,7 +47,8 @@ class DrawerPage extends StatelessWidget {
               ),
             ),
             accountEmail: Text(
-              'cyruskigo30@gmail.com',
+              // 'cyruskigo30@gmail.com',
+              '${FirebaseAuth.instance.currentUser?.email}',
               style: Theme.of(context)
                   .textTheme
                   .bodyLarge
@@ -67,7 +69,7 @@ class DrawerPage extends StatelessWidget {
               showModalBottomSheet(
                   context: context,
                   builder: (context) {
-                    return const MainDashboard();
+                    return const NotesDashboardScreen();
                   });
             },
           ),

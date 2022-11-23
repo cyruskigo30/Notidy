@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:notidy/home/Dashboard/notes_dashboard_screen.dart';
 import '../../../utils/constants/constants.dart';
 import '../../../utils/theme/colors.dart';
 import '../../../widgets/custom_input_field.dart';
@@ -104,14 +105,38 @@ class _SignInBodyState extends State<SignInBody> {
                       email: email,
                       password: password,
                     );
+                    Navigator.pushNamedAndRemoveUntil(context,
+                        NotesDashboardScreen.routeName, (route) => false);
                   } on FirebaseAuthException catch (e) {
                     log(e.code);
                     if (e.code == 'user-not-found') {
                       log('User Account Not Found');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('User Account Not Found'),
+                        ),
+                      );
                     } else if (e.code == 'wrong-password') {
                       log('Wrong Account Password');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Wrong Account Password'),
+                        ),
+                      );
                     } else if (e.code == 'invalid-email') {
-                      log('Incalid Email Address');
+                      log('Invalid Email Address');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Invalid Email Address'),
+                        ),
+                      );
+                    } else if (e.code == 'unknown') {
+                      log('Ensure all details are provided');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Ensure all details are provided'),
+                        ),
+                      );
                     }
                   }
 

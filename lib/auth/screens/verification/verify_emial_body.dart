@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:notidy/auth/screens/signin/sign_in_screen.dart';
 import '../../../utils/constants/constants.dart';
 import '../../../widgets/primary_button.dart';
 import '../../../widgets/widget_seperator.dart';
@@ -56,6 +57,12 @@ class _VerifyEmailBodyState extends State<VerifyEmailBody> {
             ),
           ),
           const WidgetSeperator(),
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, SignInScreen.routeName);
+            },
+            child: Text('Already verified?'),
+          ),
         ],
       ),
     );

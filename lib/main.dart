@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notidy/auth/components/firebase_initializer.dart';
 import 'utils/routes/routes.dart';
-import 'utils/theme/recipia_theme.dart';
+import 'utils/theme/notidy_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,8 +20,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       //todo add theme
       // theme: theme,
-      theme: RecipiaTheme.light(),
-      darkTheme: RecipiaTheme.dark(),
+      theme: NotidyTheme.light(),
+      darkTheme: NotidyTheme.dark(),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
 

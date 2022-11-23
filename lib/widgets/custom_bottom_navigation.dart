@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../home/Dashboard/main_dashboard.dart';
+import '../home/Dashboard/notes_dashboard_screen.dart';
 
 class CustomBottomNavigation extends StatelessWidget {
   const CustomBottomNavigation({
@@ -17,7 +17,7 @@ class CustomBottomNavigation extends StatelessWidget {
         showModalBottomSheet(
             context: context,
             builder: (context) {
-              return const MainDashboard();
+              return const NotesDashboardScreen();
             });
       },
       items: const [
