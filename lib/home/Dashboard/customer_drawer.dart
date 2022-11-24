@@ -124,14 +124,6 @@ class DrawerPage extends StatelessWidget {
               ],
             ),
           ),
-          const AddDivider(),
-          BuildDrawerItem(
-            drawerIcon: Icons.power_settings_new_rounded,
-            drawerTitle: 'Sign out',
-            drawerAction: () {
-              Navigator.pushNamed(context, SplashScreen.routeName);
-            },
-          ),
         ],
       ),
     );
