@@ -100,47 +100,72 @@ class _SignInBodyState extends State<SignInBody> {
                   final email = _emailController.text;
                   final password = _passwordController.text;
                   try {
-                    final UserCredential =
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    ///Try getting the user signed into the firebase DB using their email and password
+                    await FirebaseAuth.instance.signInWithEmailAndPassword(
                       email: email,
                       password: password,
                     );
-                    Navigator.pushNamedAndRemoveUntil(context,
+
+                    /// this is just to alleviate dart concern on using navigator after async
+                    if (!mounted) return;
+
+                    /// If successful send th euser to the dashboard
+                    Navigator.of(context).pushNamedAndRemoveUntil(
                         NotesDashboardScreen.routeName, (route) => false);
-                  } on FirebaseAuthException catch (e) {
-                    log(e.code);
-                    if (e.code == 'user-not-found') {
+
+                    ///If it fails tell the user why their attempt to sign in failed
+                  } on FirebaseAuthException catch (error) {
+                    log(error.code);
+                    if (error.code == 'user-not-found') {
                       log('User Account Not Found');
                       ScaffoldMessenger.of(context).showSnackBar(
+                        ///display error using a snackbar
                         const SnackBar(
-                          content: Text('User Account Not Found'),
+                          content: Text('Error!!  User Account Not Found'),
                         ),
                       );
-                    } else if (e.code == 'wrong-password') {
+
+                      ///Display error using an alert dialog
+                      showErrorDialog(context, 'User Account Not Found');
+                    } else if (error.code == 'wrong-password') {
                       log('Wrong Account Password');
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Wrong Account Password'),
                         ),
                       );
-                    } else if (e.code == 'invalid-email') {
+                    } else if (error.code == 'invalid-email') {
                       log('Invalid Email Address');
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Invalid Email Address'),
                         ),
                       );
-                    } else if (e.code == 'unknown') {
+                    } else if (error.code == 'unknown') {
                       log('Ensure all details are provided');
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Ensure all details are provided'),
                         ),
                       );
-                    }
-                  }
 
-                  // Navigator.pushNamed(context, MainDashboard.routeName);
+                      ///Other firebase auth errors that we may not know will be displayed by this else
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error!! ${error.code}'),
+                        ),
+                      );
+                    }
+
+                    ///when the error has nothing to do with firebase but another kinds of exceptions
+                  } catch (error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error : ${error.toString()}'),
+                      ),
+                    );
+                  }
                 },
               ),
             ),
@@ -195,4 +220,39 @@ class _SignInBodyState extends State<SignInBody> {
       ),
     );
   }
+}
+
+///We need a function that displays all the possible auth errors to the user
+///when they try to sign in
+Future<void> showErrorDialog(
+  BuildContext context,
+  String text,
+) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(
+          'Error ! !',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        content: Text(
+          text,
+          style: Theme.of(context).textTheme.bodyText1,
+        ),
+        actions: [
+          TextButton(
+            ///dismiss the pop up
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'ok',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+        ],
+      );
+    },
+  );
 }

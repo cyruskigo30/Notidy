@@ -61,7 +61,10 @@ class _VerifyEmailBodyState extends State<VerifyEmailBody> {
             onPressed: () {
               Navigator.pushNamed(context, SignInScreen.routeName);
             },
-            child: Text('Already verified?'),
+            child: Text(
+              'Already verified?',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
         ],
       ),

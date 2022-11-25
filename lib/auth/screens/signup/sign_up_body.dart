@@ -97,45 +97,62 @@ class _SignUpBodyState extends State<SignUpBody> {
 
                     ///Assign the firebase assigned default credentials variable  (UserCredential) to the received variables
                     try {
-                      final UserCredential = await FirebaseAuth.instance
+                      await FirebaseAuth.instance
                           .createUserWithEmailAndPassword(
                         email: email,
                         password: password,
                       );
-                    } on FirebaseAuthException catch (e) {
-                      // log(e.code);
-                      if (e.code == 'email-already-in-use') {
+
+                      ///if registration is successful, Send the user to the sign in page otherwise show error
+                      // Navigator.pushNamed(
+                      //     context, SignInScreen.routeName);
+                    } on FirebaseAuthException catch (error) {
+                      log(error.code);
+                      if (error.code == 'email-already-in-use') {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Email Address Already in use'),
                           ),
                         );
-                      } else if (e.code == 'invalid-email') {
+                      } else if (error.code == 'invalid-email') {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Invalid Email Address'),
                           ),
                         );
-                      } else if (e.code == 'weak-password') {
+                      } else if (error.code == 'weak-password') {
                         log('Weak Passsword, Please try Another');
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Weak Passsword, Please try Another'),
                           ),
                         );
-                      } else if (e.code == 'unknown') {
+                      } else if (error.code == 'unknown') {
                         log('Ensure all details are provided');
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Ensure all details are provided'),
                           ),
                         );
+
+                        ///Other firebase auth errors that we may not know will be displayed by this else
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error!! ${error.code}'),
+                          ),
+                        );
                       }
                     }
 
-                    ///if registration is successful, Send the user to the sign in page otherwise show error
-                    // Navigator.pushNamed(
-                    //     context, SignInScreen.routeName);
+                    ///when the error has nothing to do with firebase but another kinds of exceptions
+                    catch (error) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error : ${error.toString()}'),
+                        ),
+                      );
+                    }
                   },
                 ),
               ],
