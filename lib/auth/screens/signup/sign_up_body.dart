@@ -1,7 +1,7 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:notidy/auth/screens/signin/sign_in_screen.dart';
+import 'package:notidy/utils/functions/show_snackbar.dart';
 import 'package:notidy/utils/theme/colors.dart';
 import '../../../utils/constants/constants.dart';
 import '../../../widgets/custom_input_field.dart';
@@ -107,51 +107,26 @@ class _SignUpBodyState extends State<SignUpBody> {
                       // Navigator.pushNamed(
                       //     context, SignInScreen.routeName);
                     } on FirebaseAuthException catch (error) {
-                      log(error.code);
                       if (error.code == 'email-already-in-use') {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Email Address Already in use'),
-                          ),
-                        );
+                        showSnackBar(context, 'Email Address Already in use');
                       } else if (error.code == 'invalid-email') {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Invalid Email Address'),
-                          ),
-                        );
+                        showSnackBar(context, 'Invalid Email Address');
                       } else if (error.code == 'weak-password') {
-                        log('Weak Passsword, Please try Another');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Weak Passsword, Please try Another'),
-                          ),
-                        );
+                        showSnackBar(
+                            context, 'Weak Passsword, Please try Another');
                       } else if (error.code == 'unknown') {
-                        log('Ensure all details are provided');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Ensure all details are provided'),
-                          ),
-                        );
+                        showSnackBar(
+                            context, 'Ensure all details are provided');
 
                         ///Other firebase auth errors that we may not know will be displayed by this else
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error!! ${error.code}'),
-                          ),
-                        );
+                        showSnackBar(context, 'Error!! ${error.code}');
                       }
                     }
 
                     ///when the error has nothing to do with firebase but another kinds of exceptions
                     catch (error) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error : ${error.toString()}'),
-                        ),
-                      );
+                      showSnackBar(context, 'Error : ${error.toString()}');
                     }
                   },
                 ),

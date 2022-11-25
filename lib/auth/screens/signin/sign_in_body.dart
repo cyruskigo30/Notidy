@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:notidy/home/Dashboard/notes_dashboard_screen.dart';
+import 'package:notidy/utils/functions/show_snackbar.dart';
 import '../../../utils/constants/constants.dart';
 import '../../../utils/theme/colors.dart';
 import '../../../widgets/custom_input_field.dart';
@@ -115,56 +115,23 @@ class _SignInBodyState extends State<SignInBody> {
 
                     ///If it fails tell the user why their attempt to sign in failed
                   } on FirebaseAuthException catch (error) {
-                    log(error.code);
                     if (error.code == 'user-not-found') {
-                      log('User Account Not Found');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        ///display error using a snackbar
-                        const SnackBar(
-                          content: Text('Error!!  User Account Not Found'),
-                        ),
-                      );
-
-                      ///Display error using an alert dialog
-                      showErrorDialog(context, 'User Account Not Found');
+                      showSnackBar(context, 'Error!!  User Account Not Found');
                     } else if (error.code == 'wrong-password') {
-                      log('Wrong Account Password');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Wrong Account Password'),
-                        ),
-                      );
+                      showSnackBar(context, 'Wrong Account Password');
                     } else if (error.code == 'invalid-email') {
-                      log('Invalid Email Address');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Invalid Email Address'),
-                        ),
-                      );
+                      showSnackBar(context, 'Invalid Email Address');
                     } else if (error.code == 'unknown') {
-                      log('Ensure all details are provided');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Ensure all details are provided'),
-                        ),
-                      );
+                      showSnackBar(context, 'Ensure all details are provided');
 
                       ///Other firebase auth errors that we may not know will be displayed by this else
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error!! ${error.code}'),
-                        ),
-                      );
+                      showSnackBar(context, 'Error!! ${error.code}');
                     }
 
                     ///when the error has nothing to do with firebase but another kinds of exceptions
                   } catch (error) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error : ${error.toString()}'),
-                      ),
-                    );
+                    showSnackBar(context, 'Error : ${error.toString()}');
                   }
                 },
               ),
@@ -220,39 +187,4 @@ class _SignInBodyState extends State<SignInBody> {
       ),
     );
   }
-}
-
-///We need a function that displays all the possible auth errors to the user
-///when they try to sign in
-Future<void> showErrorDialog(
-  BuildContext context,
-  String text,
-) {
-  return showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text(
-          'Error ! !',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        content: Text(
-          text,
-          style: Theme.of(context).textTheme.bodyText1,
-        ),
-        actions: [
-          TextButton(
-            ///dismiss the pop up
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text(
-              'ok',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-        ],
-      );
-    },
-  );
 }
