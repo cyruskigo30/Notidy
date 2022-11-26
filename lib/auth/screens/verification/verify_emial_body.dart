@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:notidy/auth/screens/signin/sign_in_screen.dart';
-import '../../../utils/constants/constants.dart';
 import '../../../widgets/primary_button.dart';
 import '../../../widgets/widget_seperator.dart';
 import '../../components/upside.dart';
@@ -21,51 +18,48 @@ class _VerifyEmailBodyState extends State<VerifyEmailBody> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          /// container holding the login image
+          const WidgetSeperator(),
+
+          /// container holding the verify email image
+
           const Upside(
             imgUrl: "assets/images/signin.svg",
           ),
 
           const WidgetSeperator(),
+
+          ///Tell the user that we automatially send en email to their address
+          ///and they should use it to verify their account
           Text(
-            'Click to Verify email',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const WidgetSeperator(),
-          Text(
-            'An email verification link will be sent to your email address.',
+            'An email verification link was sent to your email address.',
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
           const WidgetSeperator(),
 
-          /// Sign in Button
-          Container(
-            margin:
-                const EdgeInsets.symmetric(horizontal: kDefaultScreenMargin),
-            child: PrimaryButton(
-              icon: Icons.keyboard_arrow_up_outlined,
-              text: 'Verify Email',
-              onClick: () async {
-                ///first get the current user
-                final appUser = FirebaseAuth.instance.currentUser;
-                log('${appUser?.email}');
+          ///If they didn't reeive the email,
+          ///Give them a button to resend the email  link again
+          Row(
+            children: [
+              Text(
+                'Did\'nt Receive it?',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+              PrimaryButton(
+                icon: Icons.keyboard_arrow_up_outlined,
+                text: 'Resend Email',
+                onClick: () async {
+                  ///first get the current user
+                  final appUser = FirebaseAuth.instance.currentUser;
 
-                ///send user the email verification using the firebase predefined function
-                await appUser?.sendEmailVerification();
-              },
-            ),
+                  ///send user the email verification using the firebase predefined function
+                  await appUser?.sendEmailVerification();
+                },
+              ),
+            ],
           ),
           const WidgetSeperator(),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, SignInScreen.routeName);
-            },
-            child: Text(
-              'Already verified?',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
         ],
       ),
     );

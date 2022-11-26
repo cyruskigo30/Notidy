@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:notidy/auth/screens/signin/sign_in_screen.dart';
+import 'package:notidy/auth/screens/verification/verify_email_screen.dart';
 import 'package:notidy/utils/functions/show_snackbar.dart';
 import 'package:notidy/utils/theme/colors.dart';
 import '../../../utils/constants/constants.dart';
@@ -95,7 +96,11 @@ class _SignUpBodyState extends State<SignUpBody> {
                     final email = _emailController.text;
                     final password = _passwordController.text;
 
-                    ///Assign the firebase assigned default credentials variable  (UserCredential) to the received variables
+                    ///We need to save our user to firebase using the received email and password
+                    ///and to do this we use firebase predefined createuserwithemailandpassword function
+                    ///if registration is successful, Send the user a verification email
+                    ///and also reroute them to the verification email page so that they can manually resend the link
+                    ///if they didn't receive it
                     try {
                       await FirebaseAuth.instance
                           .createUserWithEmailAndPassword(
@@ -103,9 +108,26 @@ class _SignUpBodyState extends State<SignUpBody> {
                         password: password,
                       );
 
-                      ///if registration is successful, Send the user to the sign in page otherwise show error
-                      // Navigator.pushNamed(
-                      //     context, SignInScreen.routeName);
+                      ///to automatically send the link to email upon successful registration,
+                      ///We start by getting the current user
+                      final currentUser = FirebaseAuth.instance.currentUser;
+
+                      ///Then we use the Firebase inbuilt function for sending user verification
+                      await currentUser?.sendEmailVerification();
+
+                      ///Use push named to give the user the possibility of going back to registration if they used the wromg email
+                      /// this is just to alleviate dart concern on using navigator after async
+                      if (!mounted) return;
+
+                      /// We then reroute the user to the verification screen where we notify them of our action
+                      /// in which we just sent them the link above
+                      /// or give them an option to resend the link if they didn't recieve it
+
+                      Navigator.of(context)
+                          .pushNamed(VerifyEmailScreen.routeName);
+
+                      ///If registration didn't happen,
+                      ///Let's tell the user why using our custom made global fucntion that displays the reason (Error) in a snackbar
                     } on FirebaseAuthException catch (error) {
                       if (error.code == 'email-already-in-use') {
                         showSnackBar(context, 'Email Address Already in use');
