@@ -13,11 +13,11 @@ class VerifyEmailScreen extends StatelessWidget {
           'Verify Email',
         ),
       ),
-      body: Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(
-            horizontal: kMediumWidth,
-          ),
+      body: Container(
+        margin: const EdgeInsets.symmetric(
+          horizontal: kMediumWidth,
+        ),
+        child: Center(
           child: const VerifyEmailBody(),
         ),
       ),

@@ -6,6 +6,7 @@ import 'package:notidy/auth/screens/signin/sign_in_screen.dart';
 import 'package:notidy/auth/screens/splash/splash_screen.dart';
 import 'package:notidy/auth/screens/verification/verify_email_screen.dart';
 import 'package:notidy/firebase_options.dart';
+import 'package:notidy/home/Dashboard/notes_dashboard_screen.dart';
 import 'package:notidy/utils/theme/colors.dart';
 
 class AppInitializer extends StatelessWidget {
@@ -27,9 +28,9 @@ class AppInitializer extends StatelessWidget {
 
             ///Check if user exists
             if (appUser != null) {
-              ///if user exists and email is verified send them to sign in screen
+              ///if user exists and email is verified send them to dashboard
               if (appUser.emailVerified) {
-                return const SignInScreen();
+                return const NotesDashboardScreen();
 
                 ///if the user exists but haven't verified their email send them to the verify email screen
               } else {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:notidy/auth/screens/splash/splash_screen.dart';
+import 'package:notidy/utils/theme/colors.dart';
 import '../../../widgets/primary_button.dart';
 import '../../../widgets/widget_seperator.dart';
 import '../../components/upside.dart';
@@ -26,40 +28,76 @@ class _VerifyEmailBodyState extends State<VerifyEmailBody> {
             imgUrl: "assets/images/signin.svg",
           ),
 
-          const WidgetSeperator(),
+          const SizedBox(height: 40),
 
           ///Tell the user that we automatially send en email to their address
           ///and they should use it to verify their account
           Text(
             'An email verification link was sent to your email address.',
+            style: Theme.of(context).textTheme.titleSmall,
+            textAlign: TextAlign.center,
+          ),
+
+          const SizedBox(height: 40),
+          Text(
+            'Also check your Spam folder if not in your inbox.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: kPrimaryColor,
+                ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 40),
+          Text(
+            'Not Received ?,  Click resend below',
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
-          const WidgetSeperator(),
+          const SizedBox(height: 40),
 
           ///If they didn't reeive the email,
           ///Give them a button to resend the email  link again
-          Row(
-            children: [
-              Text(
-                'Did\'nt Receive it?',
-                style: Theme.of(context).textTheme.bodyLarge,
-                textAlign: TextAlign.center,
-              ),
-              PrimaryButton(
-                icon: Icons.keyboard_arrow_up_outlined,
-                text: 'Resend Email',
-                onClick: () async {
-                  ///first get the current user
-                  final appUser = FirebaseAuth.instance.currentUser;
+          PrimaryButton(
+            icon: Icons.keyboard_arrow_up_outlined,
+            text: 'Resend  Email',
+            onClick: () async {
+              ///first get the current user
+              final appUser = FirebaseAuth.instance.currentUser;
 
-                  ///send user the email verification using the firebase predefined function
-                  await appUser?.sendEmailVerification();
-                },
-              ),
-            ],
+              ///send user the email verification using the firebase predefined function
+              await appUser?.sendEmailVerification();
+            },
           ),
-          const WidgetSeperator(),
+          const SizedBox(height: 40),
+          Text(
+            'or',
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+
+          /// Remember this user is already registred but doen't have an account
+          /// we can give the user the option to leave this accout all together
+
+          TextButton.icon(
+            onPressed: () {
+              /// specifically to detach with firebase, which automatically updates phone cache
+              FirebaseAuth.instance.signOut();
+
+              /// Send the user to the beginning of the app
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  SplashScreen.routeName, (route) => false);
+            },
+            icon: Icon(
+              Icons.close_outlined,
+              color: kPrimaryColor,
+            ),
+            label: Text(
+              'Log Off',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: kPrimaryColor,
+                  ),
+            ),
+          ),
         ],
       ),
     );

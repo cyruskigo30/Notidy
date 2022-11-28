@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:notidy/auth/components/firebase_initializer.dart';
+import 'package:notidy/auth/screens/verification/verify_email_screen.dart';
 import 'package:notidy/home/Dashboard/notes_dashboard_screen.dart';
 import 'package:notidy/utils/functions/show_snackbar.dart';
 import '../../../utils/constants/constants.dart';
@@ -109,9 +111,19 @@ class _SignInBodyState extends State<SignInBody> {
                     /// this is just to alleviate dart concern on using navigator after async
                     if (!mounted) return;
 
-                    /// If successful send th euser to the dashboard
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        NotesDashboardScreen.routeName, (route) => false);
+                    ///before taking the user to the dashbaord,check if they are verified
+                    ///by first getting their credentials
+                    final appuser = FirebaseAuth.instance.currentUser;
+
+                    if (appuser?.emailVerified ?? false) {
+                      /// if they are verified send them to the dashboard
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          NotesDashboardScreen.routeName, (route) => false);
+                    } else {
+                      ///  otherwise send them to the verify email screen
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          VerifyEmailScreen.routeName, (route) => false);
+                    }
 
                     ///If it fails tell the user why their attempt to sign in failed
                   } on FirebaseAuthException catch (error) {
