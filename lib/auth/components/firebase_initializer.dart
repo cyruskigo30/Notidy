@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:notidy/auth/screens/signin/sign_in_screen.dart';
 import 'package:notidy/auth/screens/splash/splash_screen.dart';
 import 'package:notidy/auth/screens/verification/verify_email_screen.dart';
 import 'package:notidy/firebase_options.dart';

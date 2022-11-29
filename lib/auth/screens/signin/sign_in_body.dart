@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:notidy/auth/components/firebase_initializer.dart';
 import 'package:notidy/auth/screens/verification/verify_email_screen.dart';
 import 'package:notidy/home/Dashboard/notes_dashboard_screen.dart';
 import 'package:notidy/utils/functions/show_snackbar.dart';

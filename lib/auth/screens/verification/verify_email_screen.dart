@@ -17,8 +17,8 @@ class VerifyEmailScreen extends StatelessWidget {
         margin: const EdgeInsets.symmetric(
           horizontal: kMediumWidth,
         ),
-        child: Center(
-          child: const VerifyEmailBody(),
+        child: const Center(
+          child: VerifyEmailBody(),
         ),
       ),
     );
