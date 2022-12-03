@@ -1,0 +1,7 @@
+auth_user fetches user status from firebase but doesn't do any manipulations
+/// auth_exceptions just lists the possible auth errors as dictated by dart language exceptions object and is utilized by the firebase auth provider
+firebase_auth_provider manipulates firebase user data and also utilizes auth_user to access user state where needed
+firebase_auth_provider passes the user data and fucntionalities to auth provider which 
+also dictates exactly what it needs from the firebase_auth_provider
+auth_service uses an instance of auth_provider to access and pass user auth data and functionalities to the UI
+therefore insulating the UI from directly having access to firebase

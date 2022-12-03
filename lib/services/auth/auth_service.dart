@@ -1,17 +1,20 @@
+///The auth service acts as the link / messanger between the auth provider and the UI
+///It takes the specific provided functionalities from the auth provider and exposes them to the UI
+
 import 'package:notidy/services/auth/auth_providers.dart';
 import 'package:notidy/services/auth/auth_user.dart';
 
-///The auth service acts as the link / messanger between providers and the UI
-///It takes the specific provided functionalities from the providers and exposes them to the UI
-///it also utilizes the auth provider's dectated fucntionalities
+///Note that this service has absolutely no direct access to firebase
+///that's all done by firebase_auth_provider which directly accesses firebase and passes the content to auth provider
+///as well as perform manipulations like sign out
+///and then this service just accesses the functionalities and returned values in the auth provider
 class AuthService implements AuthProvider {
-  ///Auth service had no access to firebase, that's all done by firebase_auth_provider
-  ///which passes accessed firebase content to auth provider and also manipulates user firebase content and state
-  ///and in turn this file fetches that content from auth provider and shares with the UI
-  ///we need to first create an instace of the auth provider
+  ///In turn this service fetches passed content in auth provider and also fucntionalities
+  /// from the auth provider and passes them to the UI
+  ///it accesses auth provider via an instance of the provider below
   final AuthProvider authProviderInstance;
 
-  ///create a constructot
+  ///create a constructor
   const AuthService(this.authProviderInstance);
 
   ///import  and expose all allowed  auth provider functionalities to the UI
