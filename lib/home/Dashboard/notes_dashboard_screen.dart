@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
 import 'dart:developer' as app show log;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:notidy/auth/screens/splash/splash_screen.dart';
-import 'package:notidy/utils/theme/colors.dart';
+import '../../auth/screens/splash/splash_screen.dart';
+import '../../utils/theme/colors.dart';
+import '../../utils/enums/dashboard_menu_action.dart';
 import '../../widgets/custom_bottom_navigation.dart';
 import 'notes_dashboard_body.dart';
 import 'customer_drawer.dart';
@@ -13,13 +14,6 @@ class NotesDashboardScreen extends StatefulWidget {
 
   @override
   State<NotesDashboardScreen> createState() => _NotesDashboardScreenState();
-}
-
-///enums to be used in th epopup menu
-enum DashboardAction {
-  signout,
-  settings,
-  add,
 }
 
 class _NotesDashboardScreenState extends State<NotesDashboardScreen> {
@@ -49,7 +43,7 @@ class _NotesDashboardScreenState extends State<NotesDashboardScreen> {
               Icons.light_mode_outlined,
             ),
           ),
-          PopupMenuButton<DashboardAction>(
+          PopupMenuButton<DashboardActions>(
             onSelected: (value) async {
               app.log('$value');
 
@@ -57,7 +51,7 @@ class _NotesDashboardScreenState extends State<NotesDashboardScreen> {
               switch (value) {
 
                 ///Handling the log out case
-                case DashboardAction.signout:
+                case DashboardActions.signout:
 
                   ///Await the logout dialog that has the options on whether to sign out or stay in the app
                   final shouldLogout = await showLogoutDialog(context);
@@ -83,8 +77,8 @@ class _NotesDashboardScreenState extends State<NotesDashboardScreen> {
             },
             itemBuilder: (context) {
               return [
-                PopupMenuItem<DashboardAction>(
-                  value: DashboardAction.add,
+                PopupMenuItem<DashboardActions>(
+                  value: DashboardActions.add,
                   child: ListTile(
                     trailing: const Icon(Icons.keyboard_arrow_right_outlined),
                     leading: const Icon(Icons.add),
@@ -94,8 +88,8 @@ class _NotesDashboardScreenState extends State<NotesDashboardScreen> {
                     ),
                   ),
                 ),
-                PopupMenuItem<DashboardAction>(
-                  value: DashboardAction.settings,
+                PopupMenuItem<DashboardActions>(
+                  value: DashboardActions.settings,
                   child: ListTile(
                     trailing: const Icon(Icons.keyboard_arrow_right_outlined),
                     leading: const Icon(Icons.settings_outlined),
@@ -105,8 +99,8 @@ class _NotesDashboardScreenState extends State<NotesDashboardScreen> {
                     ),
                   ),
                 ),
-                PopupMenuItem<DashboardAction>(
-                  value: DashboardAction.signout,
+                PopupMenuItem<DashboardActions>(
+                  value: DashboardActions.signout,
                   child: ListTile(
                     trailing: const Icon(Icons.keyboard_arrow_right_outlined),
                     leading: const Icon(Icons.power_settings_new_rounded),

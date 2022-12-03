@@ -3,6 +3,7 @@
 
 import 'package:notidy/services/auth/auth_providers.dart';
 import 'package:notidy/services/auth/auth_user.dart';
+import 'package:notidy/services/auth/firebase_auth_provider.dart';
 
 ///Note that this service has absolutely no direct access to firebase
 ///that's all done by firebase_auth_provider which directly accesses firebase and passes the content to auth provider
@@ -16,6 +17,13 @@ class AuthService implements AuthProvider {
 
   ///create a constructor
   const AuthService(this.authProviderInstance);
+
+  /// everytime the auth service needs to use the firebase auth provider, it has to instantiate it in this case use the authProviderInstance
+  ///  This  means everytime UI needs to interract with firebase, it has to request for the authproviderInstance
+  /// instead we can use a factory initializer that returns an already configured auth_service (with firebase_auth_provider) to the UI
+  factory AuthService.firebaseAuthInitializer() => AuthService(
+        FirebaseAuthProvider(),
+      );
 
   ///import  and expose all allowed  auth provider functionalities to the UI
   ///which is essentially the purpose of auth service
