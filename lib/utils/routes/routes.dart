@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../auth/components/firebase_initializer.dart';
+import '../../auth/components/app_initializer.dart';
 import '../../auth/screens/verification/verify_email_screen.dart';
 import '../../home/modules/recipes/recipes_screen.dart';
 import '../../home/Dashboard/notes_dashboard_screen.dart';

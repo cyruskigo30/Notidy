@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:notidy/auth/screens/signin/sign_in_screen.dart';
-import 'package:notidy/auth/screens/verification/verify_email_screen.dart';
-import 'package:notidy/utils/functions/show_snackbar.dart';
-import 'package:notidy/utils/theme/colors.dart';
+import '../signin/sign_in_screen.dart';
+import '../verification/verify_email_screen.dart';
+import '../../../services/auth/auth_exceptions.dart';
+import '../../../services/auth/auth_service.dart';
+import '../../../utils/functions/show_snackbar.dart';
+import '../../../utils/theme/colors.dart';
 import '../../../utils/constants/constants.dart';
 import '../../../widgets/custom_input_field.dart';
 import '../../../widgets/primary_button.dart';
@@ -102,18 +103,20 @@ class _SignUpBodyState extends State<SignUpBody> {
                     ///and also reroute them to the verification email page so that they can manually resend the link
                     ///if they didn't receive it
                     try {
-                      await FirebaseAuth.instance
-                          .createUserWithEmailAndPassword(
-                        email: email,
-                        password: password,
+                      await AuthService.initializeFirebaseAuth().createUser(
+                        authId: email,
+                        authPassword: password,
                       );
 
                       ///to automatically send the link to email upon successful registration,
                       ///We start by getting the current user
-                      final currentUser = FirebaseAuth.instance.currentUser;
+                      // final currentUser =
+                      //     AuthService.initializeFirebaseAuth().currentUser;
 
                       ///Then we use the Firebase inbuilt function for sending user verification
-                      await currentUser?.sendEmailVerification();
+                      await AuthService.initializeFirebaseAuth()
+                          .sendEmailVerification();
+                      // await currentUser?.sendEmailVerification();
 
                       ///Use push named to give the user the possibility of going back to registration if they used the wromg email
                       /// this is just to alleviate dart concern on using navigator after async
@@ -128,27 +131,17 @@ class _SignUpBodyState extends State<SignUpBody> {
 
                       ///If registration didn't happen,
                       ///Let's tell the user why using our custom made global fucntion that displays the reason (Error) in a snackbar
-                    } on FirebaseAuthException catch (error) {
-                      if (error.code == 'email-already-in-use') {
-                        showSnackBar(context, 'Email Address Already in use');
-                      } else if (error.code == 'invalid-email') {
-                        showSnackBar(context, 'Invalid Email Address');
-                      } else if (error.code == 'weak-password') {
-                        showSnackBar(
-                            context, 'Weak Passsword, Please try Another');
-                      } else if (error.code == 'unknown') {
-                        showSnackBar(
-                            context, 'Ensure all details are provided');
-
-                        ///Other firebase auth errors that we may not know will be displayed by this else
-                      } else {
-                        showSnackBar(context, 'Error!! ${error.code}');
-                      }
-                    }
-
-                    ///when the error has nothing to do with firebase but another kinds of exceptions
-                    catch (error) {
-                      showSnackBar(context, 'Error : ${error.toString()}');
+                    } on EmailAlreaadyInUseAuthException {
+                      showSnackBar(context, 'Email Address Already in use');
+                    } on InvalidEmailAuthException {
+                      showSnackBar(context, 'Invalid Email Address');
+                    } on WeakPasswordAuthException {
+                      showSnackBar(
+                          context, 'Weak Passsword, Please try Another');
+                    } on UnknownAuthException {
+                      showSnackBar(context, 'Ensure all details are provided');
+                    } on GenericAuthException {
+                      showSnackBar(context, 'Authentication Error');
                     }
                   },
                 ),

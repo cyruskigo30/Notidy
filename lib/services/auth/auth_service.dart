@@ -21,12 +21,16 @@ class AuthService implements AuthProvider {
   /// everytime the auth service needs to use the firebase auth provider, it has to instantiate it in this case use the authProviderInstance
   ///  This  means everytime UI needs to interract with firebase, it has to request for the authproviderInstance
   /// instead we can use a factory initializer that returns an already configured auth_service (with firebase_auth_provider) to the UI
-  factory AuthService.firebaseAuthInitializer() => AuthService(
+  /// this allows the UI to interract with firebase like AuthService.firebaseAuthInitializer()
+  factory AuthService.initializeFirebaseAuth() => AuthService(
         FirebaseAuthProvider(),
       );
 
   ///import  and expose all allowed  auth provider functionalities to the UI
   ///which is essentially the purpose of auth service
+  @override
+  Future<void> initializeFirebase() =>
+      authProviderInstance.initializeFirebase();
   @override
   Future<AuthUser> createUser({
     required String authId,

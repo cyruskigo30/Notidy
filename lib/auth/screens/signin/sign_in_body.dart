@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:notidy/auth/screens/verification/verify_email_screen.dart';
 import 'package:notidy/home/Dashboard/notes_dashboard_screen.dart';
+import 'package:notidy/services/auth/auth_exceptions.dart';
+import 'package:notidy/services/auth/auth_service.dart';
 import 'package:notidy/utils/functions/show_snackbar.dart';
 import '../../../utils/constants/constants.dart';
 import '../../../utils/theme/colors.dart';
@@ -102,19 +104,23 @@ class _SignInBodyState extends State<SignInBody> {
                   final password = _passwordController.text;
                   try {
                     ///Try getting the user signed into the firebase DB using their email and password
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: email,
-                      password: password,
+                    //by asking the auth servie to initialize firebaseAuth file which then does the signing in
+                    /// as instructed by the auth provider
+                    await AuthService.initializeFirebaseAuth().signIn(
+                      authId: email,
+                      authPassword: password,
                     );
 
                     /// this is just to alleviate dart concern on using navigator after async
                     if (!mounted) return;
 
-                    ///before taking the user to the dashbaord,check if they are verified
-                    ///by first getting their credentials
-                    final appuser = FirebaseAuth.instance.currentUser;
+                    ///before taking the user to the dashbaord,check if their email isverified
+                    ///by first getting their credentials which is done by asking the auth service to initialize firebase auth
+                    ///which inturn does the checking for the UI
+                    final appuser =
+                        AuthService.initializeFirebaseAuth().currentUser;
 
-                    if (appuser?.emailVerified ?? false) {
+                    if (appuser?.isEmailVerified ?? false) {
                       /// if they are verified send them to the dashboard
                       Navigator.of(context).pushNamedAndRemoveUntil(
                           NotesDashboardScreen.routeName, (route) => false);
@@ -125,24 +131,20 @@ class _SignInBodyState extends State<SignInBody> {
                     }
 
                     ///If it fails tell the user why their attempt to sign in failed
-                  } on FirebaseAuthException catch (error) {
-                    if (error.code == 'user-not-found') {
-                      showSnackBar(context, 'Error!!  User Account Not Found');
-                    } else if (error.code == 'wrong-password') {
-                      showSnackBar(context, 'Wrong Account Password');
-                    } else if (error.code == 'invalid-email') {
-                      showSnackBar(context, 'Invalid Email Address');
-                    } else if (error.code == 'unknown') {
-                      showSnackBar(context, 'Ensure all details are provided');
-
-                      ///Other firebase auth errors that we may not know will be displayed by this else
-                    } else {
-                      showSnackBar(context, 'Error!! ${error.code}');
-                    }
-
-                    ///when the error has nothing to do with firebase but another kinds of exceptions
-                  } catch (error) {
-                    showSnackBar(context, 'Error : ${error.toString()}');
+                    ///the firebase file holds all the actual exception errors from firebase
+                    ///for the app to know what they actually are, we have to use the inbuilt exceptions type to declre them in the exceptions file
+                    ///All we have to do here is call the type of exception from the exceptions file
+                    ///which reached to firebse auth for the exception type and we use a  snackbar to display a message depending on exception
+                  } on UserNotFoundAuthException {
+                    showSnackBar(context, 'Error!!  User Account Not Found');
+                  } on WrongPasswordAuthException {
+                    showSnackBar(context, 'Wrong Account Password');
+                  } on InvalidEmailAuthException {
+                    showSnackBar(context, 'Invalid Email Address');
+                  } on UnknownAuthException {
+                    showSnackBar(context, 'Ensure all details are provided');
+                  } on GenericAuthException {
+                    showSnackBar(context, 'Authentication Error!!');
                   }
                 },
               ),

@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart'
     show FirebaseAuth, FirebaseAuthException;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:notidy/services/auth/auth_exceptions.dart';
 import 'package:notidy/services/auth/auth_providers.dart';
 import 'package:notidy/services/auth/auth_user.dart';
+import 'package:notidy/firebase_options.dart';
 
 ///This file implements the abstract auth provider functionalities specifically for firebase
 ///this file needs the exceptions file to show the auth errors to user,
@@ -15,6 +17,29 @@ import 'package:notidy/services/auth/auth_user.dart';
 
 ///this class copies / instantiates from the auth provider template
 class FirebaseAuthProvider implements AuthProvider {
+  ///impliment the firebase initialization as demanded by auth_provider template
+  @override
+  Future<void> initializeFirebase() async {
+    /// we use the inbuilt firebase action to initialize our application
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+
+  ///get the currentUser
+  @override
+  AuthUser? get currentUser {
+    ///get the user from firebase using the inbuilt FirebaseAuth method
+    final appUser = FirebaseAuth.instance.currentUser;
+
+    ///if there is a user, pass them to the auth user class
+    if (appUser != null) {
+      return AuthUser.fromFirebase(appUser);
+    } else {
+      return null;
+    }
+  }
+
   @override
 
   ///create a firebase user
@@ -66,21 +91,6 @@ class FirebaseAuthProvider implements AuthProvider {
     ///when the error has nothing to do with firebase but another kinds of exceptions
     catch (error) {
       throw GenericAuthException();
-    }
-  }
-
-  @override
-
-  ///get the currentUser
-  AuthUser? get currentUser {
-    ///get the user from firebase
-    final appUser = FirebaseAuth.instance.currentUser;
-
-    ///if there is a user, pass them to the auth user class
-    if (appUser != null) {
-      return AuthUser.fromFirebase(appUser);
-    } else {
-      return null;
     }
   }
 

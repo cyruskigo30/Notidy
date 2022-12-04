@@ -1,11 +1,10 @@
-import 'dart:developer';
-import 'package:firebase_auth/firebase_auth.dart';
+///This file runs as soon as the app is opened
+///inorder to start the process of initializing firebase
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:notidy/auth/screens/splash/splash_screen.dart';
 import 'package:notidy/auth/screens/verification/verify_email_screen.dart';
-import 'package:notidy/firebase_options.dart';
 import 'package:notidy/home/Dashboard/notes_dashboard_screen.dart';
+import 'package:notidy/services/auth/auth_service.dart';
 import 'package:notidy/utils/theme/colors.dart';
 
 class AppInitializer extends StatelessWidget {
@@ -14,21 +13,25 @@ class AppInitializer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      ),
+      ///the UI tells the auth service to initialize the firebase_auth file
+      /// then call the intializeFirebase function
+      /// whose purpose is to intialize firebase using the inbuilt Firebase.initializeAppp function.
+      future: AuthService.initializeFirebaseAuth().initializeFirebase(),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
 
           ///If firebase connection is successfully estbalished then direct user based on their state
           case ConnectionState.done:
-            final appUser = FirebaseAuth.instance.currentUser;
-            log("$appUser");
+
+            ///to get the current user status, the UI tells the auth service to initialize the firebase_auth file
+            /// then call the getter method currentUser which uses the Firebase inbuilt method  FirebaseAuth.instance.currentUser to get the user from firebase
+
+            final appUser = AuthService.initializeFirebaseAuth().currentUser;
 
             ///Check if user exists
             if (appUser != null) {
               ///if user exists and email is verified send them to dashboard
-              if (appUser.emailVerified) {
+              if (appUser.isEmailVerified) {
                 return const NotesDashboardScreen();
 
                 ///if the user exists but haven't verified their email send them to the verify email screen

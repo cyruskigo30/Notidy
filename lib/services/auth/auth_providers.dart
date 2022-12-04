@@ -7,6 +7,9 @@ import 'package:notidy/services/auth/auth_user.dart';
 ///like email and password, gmail, facebook, phone etc
 
 abstract class AuthProvider {
+  ///before any operations are done, the app needs to initialize firebase
+  Future<void> initializeFirebase();
+
   ///the provider must first optionally return the current user
   ///with the help of the auth_user since in this case is resposnible for collecting the user from firebase
   AuthUser? get currentUser;
