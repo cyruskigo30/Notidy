@@ -14,12 +14,13 @@ class AuthUser {
   final bool isEmailVerified;
 
   /// Const since we don't intend working any changes on this but just interested in its state
-  const AuthUser(this.isEmailVerified);
+  const AuthUser({required this.isEmailVerified});
 
   ///We create a factory user constructor whose job is to contact firebase
   ///and get our local constructor a copy of the firebase auth user account verification status
   ///The connstructor just accesses firebase User object and copies the status of the users email
   ///then gives it to our local constructor AuthUser above
   ///This fucntion only fetches and allows the use of verification status of the user and no other fucntionalities
-  factory AuthUser.fromFirebase(User user) => AuthUser(user.emailVerified);
+  factory AuthUser.fromFirebase(User user) =>
+      AuthUser(isEmailVerified: user.emailVerified);
 }

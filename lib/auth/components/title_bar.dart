@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notidy/widgets/widget_seperator.dart';
 import '../../home/Dashboard/notes_dashboard_screen.dart';
 import '../../widgets/svg_icon_button.dart';
 
@@ -11,7 +12,7 @@ class AuthTitleBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: MediaQuery.of(context).size.height / 6,
+      height: MediaQuery.of(context).size.height / 5,
       decoration: const BoxDecoration(
         // color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.only(
@@ -22,11 +23,13 @@ class AuthTitleBar extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const WidgetSeperator(),
           Text(
             textAlign: TextAlign.center,
             "Login to your Account",
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
+          const WidgetSeperator(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -48,8 +51,15 @@ class AuthTitleBar extends StatelessWidget {
                 },
                 iconUrl: 'assets/images/twitter-svgrepo-com.svg',
               ),
+              SvgIconButton(
+                buttonAction: () {
+                  Navigator.pushNamed(context, NotesDashboardScreen.routeName);
+                },
+                iconUrl: 'assets/images/telephone-call-svgrepo-com.svg',
+              ),
             ],
           ),
+          const WidgetSeperator(),
           Text(
             'or use your Email Address',
             style: Theme.of(context).textTheme.bodyLarge,

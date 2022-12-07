@@ -47,6 +47,12 @@ class SocialMediaSignUp extends StatelessWidget {
                 },
                 iconUrl: 'assets/images/twitter-svgrepo-com.svg',
               ),
+              SvgIconButton(
+                buttonAction: () {
+                  Navigator.pushNamed(context, SignInScreen.routeName);
+                },
+                iconUrl: 'assets/images/telephone-call-svgrepo-com.svg',
+              ),
             ],
           ),
         ],
