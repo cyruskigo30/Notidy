@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:notidy/auth/screens/splash/splash_screen.dart';
-import 'package:notidy/utils/theme/colors.dart';
+import 'package:notidy/services/auth/auth_service.dart';
+import '../splash/splash_screen.dart';
+import '../../../utils/theme/colors.dart';
 import '../../../widgets/primary_button.dart';
 import '../../../widgets/widget_seperator.dart';
 import '../../components/upside.dart';
@@ -60,11 +60,9 @@ class _VerifyEmailBodyState extends State<VerifyEmailBody> {
             icon: Icons.keyboard_arrow_up_outlined,
             text: 'Resend  Email',
             onClick: () async {
-              ///first get the current user
-              final appUser = FirebaseAuth.instance.currentUser;
-
-              ///send user the email verification using the firebase predefined function
-              await appUser?.sendEmailVerification();
+              ///send user the email verification
+              await AuthService.initializeFirebaseAuth()
+                  .sendEmailVerification();
             },
           ),
           const SizedBox(height: 40),
@@ -79,9 +77,12 @@ class _VerifyEmailBodyState extends State<VerifyEmailBody> {
           /// we can give the user the option to leave this accout all together
 
           TextButton.icon(
-            onPressed: () {
+            onPressed: () async {
               /// specifically to detach with firebase, which automatically updates phone cache
-              FirebaseAuth.instance.signOut();
+              await AuthService.initializeFirebaseAuth().signOut();
+
+              /// this is just to alleviate dart concern on using navigator after async
+              if (!mounted) return;
 
               /// Send the user to the beginning of the app
               Navigator.of(context).pushNamedAndRemoveUntil(

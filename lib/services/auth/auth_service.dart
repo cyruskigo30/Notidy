@@ -1,9 +1,9 @@
 ///The auth service acts as the link / messanger between the auth provider and the UI
 ///It takes the specific provided functionalities from the auth provider and exposes them to the UI
 
-import 'package:notidy/services/auth/auth_providers.dart';
-import 'package:notidy/services/auth/auth_user.dart';
-import 'package:notidy/services/auth/firebase_auth_provider.dart';
+import 'auth_providers.dart';
+import 'auth_user.dart';
+import 'firebase_auth_provider.dart';
 
 ///Note that this service has absolutely no direct access to firebase
 ///that's all done by firebase_auth_provider which directly accesses firebase and passes the content to auth provider

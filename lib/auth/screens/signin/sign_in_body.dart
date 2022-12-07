@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-import 'package:notidy/auth/screens/verification/verify_email_screen.dart';
-import 'package:notidy/home/Dashboard/notes_dashboard_screen.dart';
-import 'package:notidy/services/auth/auth_exceptions.dart';
-import 'package:notidy/services/auth/auth_service.dart';
-import 'package:notidy/utils/functions/show_snackbar.dart';
+import '../verification/verify_email_screen.dart';
+import '../../../home/Dashboard/notes_dashboard_screen.dart';
+import '../../../services/auth/auth_exceptions.dart';
+import '../../../services/auth/auth_service.dart';
+import '../../../utils/functions/show_snackbar.dart';
 import '../../../utils/constants/constants.dart';
 import '../../../utils/theme/colors.dart';
 import '../../../widgets/custom_input_field.dart';

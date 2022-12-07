@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:notidy/services/auth/auth_service.dart';
 import 'dart:developer' as app show log;
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../auth/screens/splash/splash_screen.dart';
 import '../../utils/theme/colors.dart';
 import '../../utils/enums/dashboard_menu_action.dart';
@@ -60,7 +60,7 @@ class _NotesDashboardScreenState extends State<NotesDashboardScreen> {
                   ///Actualize the firebase actions when the two options are presented by the showLogout Dialog function
                   if (shouldLogout) {
                     ///if you choose to log out, detach the firebase connection
-                    await FirebaseAuth.instance.signOut();
+                    await AuthService.initializeFirebaseAuth().signOut();
 
                     /// this is just to alleviate dart concern on using navigator after async
                     if (!mounted) return;

@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart'
     show FirebaseAuth, FirebaseAuthException;
 import 'package:firebase_core/firebase_core.dart';
-import 'package:notidy/services/auth/auth_exceptions.dart';
-import 'package:notidy/services/auth/auth_providers.dart';
-import 'package:notidy/services/auth/auth_user.dart';
+import 'auth_exceptions.dart';
+import 'auth_providers.dart';
+import 'auth_user.dart';
 import 'package:notidy/firebase_options.dart';
 
 ///This file implements the abstract auth provider functionalities specifically for firebase

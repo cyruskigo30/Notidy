@@ -1,11 +1,11 @@
 ///This file runs as soon as the app is opened
 ///inorder to start the process of initializing firebase
 import 'package:flutter/material.dart';
-import 'package:notidy/auth/screens/splash/splash_screen.dart';
-import 'package:notidy/auth/screens/verification/verify_email_screen.dart';
-import 'package:notidy/home/Dashboard/notes_dashboard_screen.dart';
-import 'package:notidy/services/auth/auth_service.dart';
-import 'package:notidy/utils/theme/colors.dart';
+import '../screens/splash/splash_screen.dart';
+import '../screens/verification/verify_email_screen.dart';
+import '../../home/Dashboard/notes_dashboard_screen.dart';
+import '../../services/auth/auth_service.dart';
+import '../../utils/theme/colors.dart';
 
 class AppInitializer extends StatelessWidget {
   const AppInitializer({super.key});

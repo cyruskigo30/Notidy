@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:notidy/auth/components/app_initializer.dart';
+import 'auth/components/app_initializer.dart';
 import 'utils/routes/routes.dart';
 import 'utils/theme/notidy_theme.dart';
 
