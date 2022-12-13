@@ -106,8 +106,8 @@ class _SignInBodyState extends State<SignInBody> {
                     //by asking the auth servie to initialize firebaseAuth file which then does the signing in
                     /// as instructed by the auth provider
                     await AuthService.initializeFirebaseAuth().signIn(
-                      authId: email,
-                      authPassword: password,
+                      authProviderType: email,
+                      authProviderPassword: password,
                     );
 
                     /// this is just to alleviate dart concern on using navigator after async

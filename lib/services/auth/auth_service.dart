@@ -33,14 +33,12 @@ class AuthService implements AuthProvider {
       authProviderInstance.initializeFirebase();
   @override
   Future<AuthUser> createUser({
-    required String authId,
-    required String authPassword,
-
-    /// now we
+    required String authProviderType,
+    required String authProviderPassword,
   }) =>
       authProviderInstance.createUser(
-        authId: authId,
-        authPassword: authPassword,
+        authProviderType: authProviderType,
+        authProviderPassword: authProviderPassword,
       );
 
   @override
@@ -52,12 +50,12 @@ class AuthService implements AuthProvider {
 
   @override
   Future<AuthUser> signIn({
-    required String authId,
-    required String authPassword,
+    required String authProviderType,
+    required String authProviderPassword,
   }) =>
       authProviderInstance.signIn(
-        authId: authId,
-        authPassword: authPassword,
+        authProviderType: authProviderType,
+        authProviderPassword: authProviderPassword,
       );
 
   @override

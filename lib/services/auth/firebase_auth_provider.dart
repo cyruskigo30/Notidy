@@ -44,16 +44,16 @@ class FirebaseAuthProvider implements AuthProvider {
 
   ///create a firebase user
   Future<AuthUser> createUser({
-    required String authId,
-    required String authPassword,
+    required String authProviderType,
+    required String authProviderPassword,
   }) async {
     try {
       ///this is not immidiate thus needs to await the creation of the user
 
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         ///and then pass those credentials to the local authId and authPassword
-        email: authId,
-        password: authPassword,
+        email: authProviderType,
+        password: authProviderPassword,
       );
 
       ///lets get our user which we did with the help of the current user getter
@@ -114,15 +114,15 @@ class FirebaseAuthProvider implements AuthProvider {
 
   @override
   Future<AuthUser> signIn({
-    required String authId,
-    required String authPassword,
+    required String authProviderType,
+    required String authProviderPassword,
   }) async {
     try {
       ///try to log in with email and password and
       ///pass the received credentials to the local auth ID and password
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: authId,
-        password: authPassword,
+        email: authProviderType,
+        password: authProviderPassword,
       );
 
       ///rememeber we must return a user as demanded by the auth exception abstract class

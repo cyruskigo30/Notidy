@@ -20,8 +20,8 @@ abstract class AuthProvider {
 
       ///every auth provider must have a unique id like email, phone number username etc and password to allow log in
       {
-    required String authId,
-    required String authPassword,
+    required String authProviderType,
+    required String authProviderPassword,
   });
 
   ///Allow whichever the auth provider you use to sign up to the app
@@ -29,8 +29,8 @@ abstract class AuthProvider {
   Future<AuthUser> createUser({
     ///every auth provider must have a unique id like email, phone number username etc and password to allow sign up
 
-    required String authId,
-    required String authPassword,
+    required String authProviderType,
+    required String authProviderPassword,
   });
 
   ///Allow whichever the auth provider you use to sign out

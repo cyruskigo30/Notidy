@@ -104,8 +104,8 @@ class _SignUpBodyState extends State<SignUpBody> {
                     ///if they didn't receive it
                     try {
                       await AuthService.initializeFirebaseAuth().createUser(
-                        authId: email,
-                        authPassword: password,
+                        authProviderType: email,
+                        authProviderPassword: password,
                       );
 
                       ///to automatically send the link to email upon successful registration,
