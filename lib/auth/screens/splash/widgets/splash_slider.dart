@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../utils/constants/constants.dart';
 import '../../../../utils/theme/colors.dart';
 
 class SplashSlider extends StatelessWidget {
@@ -13,6 +12,7 @@ class SplashSlider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        const Spacer(),
         Text(
           'Notidy',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -22,7 +22,7 @@ class SplashSlider extends StatelessWidget {
                 fontFamily: 'Poppins',
               ),
         ),
-        const SizedBox(height: kMediumHeight),
+        const Spacer(),
         Text(
           text,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(

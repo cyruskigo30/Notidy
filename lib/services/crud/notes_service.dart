@@ -1,6 +1,7 @@
 ///This is the point of contact with the sql database
 ///it'll find users, create users, find notes
 ///delete users, create notes basically every asction the app needs
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,8 +14,62 @@ import 'sql_commands.dart';
 ///  definitions and parameters below
 /// The operations arent immidiate so it will be async
 class NotesService {
-  ///A local db  which can be null at the beginning
+  /// Declare A local db  which can be null at the beginning
   Database? _localDb;
+
+  ///To associate a unser with a note when they create it after logging in ,
+  ///We need to either create them or get them from db
+
+  Future<DatabaseUser> getOrCreateUser({required emailAddress}) async {
+    ///We either create the user or fetch them from db if they exist
+    ///the already defined fucntion getUser requiires an email address
+    ///try getting the user
+    try {
+      final fetchedUser = await getUser(email: emailAddress);
+
+      ///then return the user if they exist to the fucntion caller
+      return fetchedUser;
+
+      ///if the user doesnt exist we call the crud exception
+      ///and create a new user
+    } on CouldNotFindThatUserCrudException {
+      final createdUser = await createUser(email: emailAddress);
+
+      ///and return them to fucntion caller
+      return createdUser;
+    } catch (e) {
+      /// rethrow any other errors, good practice for debugging
+      rethrow;
+    }
+  }
+
+  ///all notes are held within an internal notes list
+  ///after any manipulation is done on the list of notes, the UI is immediately notified
+  ///by the stream (stream controller) and immidiately updates
+  List<DatabaseNotes> _notesList = [];
+
+  ///create a stream of a list of database notes (Basically a pipe of notes)
+  ///a broadcast stream can be listened to more than once.
+  final _notesStreamController =
+      StreamController<List<DatabaseNotes>>.broadcast();
+
+  ///We need a function that gets the notes from the db
+  ///and caches them inside the stream controller and the list holding the notes
+  ///NB if dart ever complains that a private(_) varibale or function isnt referenced or used
+  ///and ignores other public varibles and functions, this is because it can 100% determine the varibles and fucntions arent used
+  ///since private declarations can only be used within that specific file
+  Future<void> _cachedNotes() async {
+    ///get the db notes from the already created function to get the notes
+    final allCachedNotes = await getAllNotes();
+
+    ///Convert received iterable of notes from db into a list
+    ///and assign it into the internal notes list
+    _notesList = allCachedNotes.toList();
+
+    ///also ensure the notes controller also gets a hold of the notes list
+    ///inorder to update the UI on any changes that happens to the internal notes list
+    _notesStreamController.add(_notesList);
+  }
 
   ///Future function to open the database
   Future<void> openDb() async {
@@ -36,16 +91,20 @@ class NotesService {
 
       ///Open databse with a sqlite inbuilt fucntion openDatabase()
       ///Await on it
-      final appDatabase = await openDatabase(databasePath);
+      final db = await openDatabase(databasePath);
 
       ///Assign opened sqlite databse to local database
-      _localDb = appDatabase;
+      _localDb = db;
 
       /// create users table by executing the sql command
-      await appDatabase.execute(createUsersTable);
+      await db.execute(createUsersTable);
 
       /// create notes table by executing the sql command
-      await appDatabase.execute(createNotesTable);
+      await db.execute(createNotesTable);
+
+      ///call the cache notes function to update the internal notes list
+      ///as well as the stream controller of the creation of the table
+      await _cachedNotes();
 
       /// By default, it may throw an exception `MissingPlatformDirectoryException` if the system is unable to
       /// provide the directory on a supported platform.
@@ -211,13 +270,19 @@ class NotesService {
       isSyncedWithServer: true,
     );
 
-    ///the return the note
+    ///After creating the note , add it to the local notes list
+    _notesList.add(createdNote);
+
+    ///as well as the the stream controller inorder to update the UI
+    _notesStreamController.add(_notesList);
+
+    ///then return the created note
     return createdNote;
   }
 
   ///Function to delete a note from the db
   ///requires the noteId but doesnt return anything
-  Future<void> deleteNote({required int id}) async {
+  Future<void> deleteSingleNote({required int id}) async {
     final db = getDatabaseOrThrow();
 
     ///if the given note id exists then we delete it
@@ -231,6 +296,13 @@ class NotesService {
     ///throw an exception
     if (deletedNote == 0) {
       throw CouldNotDeleteNoteCrudException();
+    } else {
+      ///if you deleted something from the db,
+      ///also remove a note from the local list where that note's id == to the deleted notes id
+      _notesList.removeWhere((note) => note.noteId == id);
+
+      ///update the notes controller of this change so that it updates the UI
+      _notesStreamController.add(_notesList);
     }
   }
 
@@ -238,13 +310,22 @@ class NotesService {
   Future<int> deleteAllNotes() async {
     final db = getDatabaseOrThrow();
 
-    ///delete alll notes in the table
-    ///returns number of rows affected
-    return await db.delete(notesTable);
+    ///delete all notes in the table
+    ///returns number of rows deleted
+    final numberOfDeletedNotes = await db.delete(notesTable);
+
+    ///Delete all notes also in the internal notes list
+    _notesList = [];
+
+    ///update the notes stream controller of this change which inturn updates the UI
+    _notesStreamController.add(_notesList);
+
+    ///then return the number of deletions as required by the deleteAllNotes Function
+    return numberOfDeletedNotes;
   }
 
   ///Function to fetch a specific note
-  Future<DatabaseNotes> getSpecificNote({required int id}) async {
+  Future<DatabaseNotes> getSingleNote({required int id}) async {
     final db = getDatabaseOrThrow();
 
     ///query the db to return a list of notes with a limit of one
@@ -261,15 +342,28 @@ class NotesService {
     } else {
       ///if a note was found
       ///return instance of the db
-      return DatabaseNotes.fromRow(openedNote.first);
+      final fetchedNote = DatabaseNotes.fromRow(openedNote.first);
+
+      ///since we need the notes list and notes stream controller to contain the latest information from db
+      ///remove the old note from the internal notes list
+      _notesList.removeWhere((note) => note.noteId == id);
+
+      ///add the new fetched note into the internal notes list
+      _notesList.add(fetchedNote);
+
+      ///update the notes stream controller inorder for it to update the UI
+      _notesStreamController.add(_notesList);
+
+      ///Return the single note required by the getSingleNote function
+      return fetchedNote;
     }
   }
 
   ///Get all Notes for a specific user
-  Future<Iterable> getAllNotes() async {
+  Future<Iterable<DatabaseNotes>> getAllNotes() async {
     final db = getDatabaseOrThrow();
 
-    ///query the db to return a list of notes with a limit of one
+    ///query the db to return a list of all notes in the db
     final allNotes = await db.query(
       notesTable,
     );
@@ -282,20 +376,35 @@ class NotesService {
     required String noteText,
   }) async {
     final db = getDatabaseOrThrow();
-    //ensure the note exists before update
-    await getSpecificNote(id: note.noteId);
 
+    //ensure the note exists before update
+    await getSingleNote(id: note.noteId);
+
+    ///Update the db note  details
     final updatedRow = await db.update(notesTable, {
       noteContentColumn: noteText,
       isSyncedWithServerColumn: 0,
     });
 
-    ///if no rows are updated
+    ///if no rows of db are updated throw an exception
     if (updatedRow == 0) {
       throw CouldNotUpdateNoteCrudException();
     } else {
-      ///return updated note id
-      return await getSpecificNote(id: note.noteId);
+      ///get the updated note from the db
+      final updatedNote = await getSingleNote(id: note.noteId);
+
+      ///since we need the internal notes list and notes stream controller to contain the latest information from db
+      ///Remove the old note fromt the local notes list with similar Id as the just updated note
+      _notesList.removeWhere((notet) => note.noteId == updatedNote.noteId);
+
+      ///Add the newly updated note to the internal notes list
+      _notesList.add(updatedNote);
+
+      ///update the notes stream so that it can update the UI
+      _notesStreamController.add(_notesList);
+
+      ///Return the updated note required by the updateNote function
+      return updatedNote;
     }
   }
 }
