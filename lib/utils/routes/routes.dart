@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notidy/home/Dashboard/quickactions/new_note_screen.dart';
 import '../../auth/components/app_initializer.dart';
 import '../../auth/screens/verification/verify_email_screen.dart';
 import '../../home/modules/recipes/recipes_screen.dart';
@@ -16,4 +17,5 @@ final Map<String, WidgetBuilder> routes = {
   RecipesScreen.routeName: (context) => const RecipesScreen(),
   AppInitializer.routeName: (context) => const AppInitializer(),
   VerifyEmailScreen.routeName: (context) => const VerifyEmailScreen(),
+  NewNoteScreen.routeName: (context) => const NewNoteScreen(),
 };

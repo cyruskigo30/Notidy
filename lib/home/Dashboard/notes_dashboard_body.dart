@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'quickactions/new_note_screen.dart';
 import '../../services/auth/auth_service.dart';
 import '../../widgets/circular_loading_indicator.dart';
 import '../../services/crud/notes_service.dart';
@@ -105,11 +106,14 @@ class _DashboardBodyState extends State<DashboardBody> {
                                   ),
                                   children: [
                                     MenuButton(
-                                      buttonColor: Colors.teal,
-                                      buttonText: 'My Notes',
+                                      buttonColor: Colors.green,
+                                      buttonText: 'New Note',
                                       imageUrl:
-                                          'assets/svg/sort-arrows-svgrepo-com (1).svg',
-                                      onClick: () {},
+                                          'assets/svg/add-svgrepo-com.svg',
+                                      onClick: () {
+                                        Navigator.pushNamed(
+                                            context, NewNoteScreen.routeName);
+                                      },
                                     ),
                                     MenuButton(
                                       buttonColor: Colors.purple,
@@ -121,7 +125,7 @@ class _DashboardBodyState extends State<DashboardBody> {
                                       },
                                     ),
                                     MenuButton(
-                                      buttonColor: Colors.green,
+                                      buttonColor: Colors.blue,
                                       buttonText: 'Categories',
                                       imageUrl:
                                           'assets/svg/sort-arrows-svgrepo-com.svg',
@@ -130,13 +134,11 @@ class _DashboardBodyState extends State<DashboardBody> {
                                       },
                                     ),
                                     MenuButton(
-                                      buttonColor: Colors.pinkAccent,
-                                      buttonText: 'New Note',
+                                      buttonColor: Colors.pink,
+                                      buttonText: 'My Notes',
                                       imageUrl:
-                                          'assets/svg/add-svgrepo-com.svg',
-                                      onClick: () {
-                                        // Navigator.pushNamed(context, MachineryScreen.routeName);
-                                      },
+                                          'assets/svg/sort-arrows-svgrepo-com (1).svg',
+                                      onClick: () {},
                                     ),
                                   ],
                                 ),
