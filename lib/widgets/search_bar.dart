@@ -9,7 +9,7 @@ class SearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return const TextField(
       decoration: InputDecoration(
-        hintText: "Search...",
+        hintText: "Search my notes...",
         prefixIcon: Icon(Icons.search),
       ),
     );

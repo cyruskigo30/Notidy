@@ -17,8 +17,37 @@ class NotesService {
   /// Declare A local db  which can be null at the beginning
   Database? _localDb;
 
-  ///To associate a unser with a note when they create it after logging in ,
-  ///We need to either create them or get them from db
+  ///all notes are held within an internal notes list
+  ///after any manipulation is done on the list of notes, the UI is immediately notified
+  ///by the stream (stream controller) and immidiately updates
+  List<DatabaseNotes> _internalNotesList = [];
+
+  ///create a stream of a list of database notes (Basically a pipe of notes)
+  ///a broadcast stream can be listened to more than once.
+  final _notesStreamController =
+      StreamController<List<DatabaseNotes>>.broadcast();
+
+  ///A getter stream that gets all notes listed in the notes stream controller
+  Stream<List<DatabaseNotes>> get allNotesStream =>
+      _notesStreamController.stream;
+
+  ///it's a bad idea to keep initializing (making new copies) of the notes service (init function) when we utilize it
+  ///Instead, we can ensure the initialization of notes service happens only once (one instance) in the entire application using a singleton
+  ///a singleton is a design pattern that allows you to ensure that a class has only one instance,
+  ///while providing a global access point to this instance.
+  ///start by creating a private constructor
+  ///This will prevent other classes from creating instances of our singleton class (NotesService)
+  static final NotesService _sharedNotes = NotesService._sharedNotesInstance();
+
+  ///A static field to hold the singleton instance: This field will hold the single instance of your class.
+  NotesService._sharedNotesInstance();
+
+  ///A static method that gets called to get the singleton instance
+  ///returns the single instance of the class (notes service), and will create the instance if it doesn't exist yet.
+  factory NotesService() => _sharedNotes;
+
+  ///To associate a user with a note when they create it after logging in ,
+  ///We need to either create them or get them from db using their email address
 
   Future<DatabaseUser> getOrCreateUser({required emailAddress}) async {
     ///We either create the user or fetch them from db if they exist
@@ -43,16 +72,6 @@ class NotesService {
     }
   }
 
-  ///all notes are held within an internal notes list
-  ///after any manipulation is done on the list of notes, the UI is immediately notified
-  ///by the stream (stream controller) and immidiately updates
-  List<DatabaseNotes> _notesList = [];
-
-  ///create a stream of a list of database notes (Basically a pipe of notes)
-  ///a broadcast stream can be listened to more than once.
-  final _notesStreamController =
-      StreamController<List<DatabaseNotes>>.broadcast();
-
   ///We need a function that gets the notes from the db
   ///and caches them inside the stream controller and the list holding the notes
   ///NB if dart ever complains that a private(_) varibale or function isnt referenced or used
@@ -64,16 +83,18 @@ class NotesService {
 
     ///Convert received iterable of notes from db into a list
     ///and assign it into the internal notes list
-    _notesList = allCachedNotes.toList();
+    _internalNotesList = allCachedNotes.toList();
 
     ///also ensure the notes controller also gets a hold of the notes list
     ///inorder to update the UI on any changes that happens to the internal notes list
-    _notesStreamController.add(_notesList);
+    _notesStreamController.add(_internalNotesList);
   }
 
   ///Future function to open the database
+  ///it esures that before any fucntion wworks with db,
+  ///it is not only available like the getDatabaseOrThrow fucntionality verifies, but also it is open
   Future<void> openDb() async {
-    ///test whether the local db is open
+    ///test whether the local db is available
     /// if it is, throw an exception already open and the app functions can proceed
     if (_localDb != null) {
       ///exception
@@ -114,6 +135,16 @@ class NotesService {
     }
   }
 
+  ///A fucntion that ensures the database is open
+  Future<void> _ensureDbisOpen() async {
+    try {
+      ///first await the opening of the db
+      await openDb();
+    } on DatabaseAlreadyOpenCrudException {
+//empty
+    }
+  }
+
   ///Future Fucntion to close the Database
   Future<void> closeDb() async {
     ///custome local Db instance
@@ -132,27 +163,30 @@ class NotesService {
     }
   }
 
-  ///we need a database state checker
-  ///All editing and database data manipulation depends on the state of the database (open or closed)
+  ///A database availability checker (but doesnt ensure the databse is open)
+  ///All editing and database data manipulation depends on whether the database is available or not
   ///We need a function that checks that state
   ///so that depending on that state we either get the database and start manipulation
   /// or receive an exception (This eliminates the need to use if statements everywhere)
   Database getDatabaseOrThrow() {
     final db = _localDb;
 
-    ///if there is no database
+    ///when local db is not available
     if (db == null) {
       ///throw exception
       throw DatabaseNotOpenCrudException();
     } else {
-      ///otherwise return the available database
+      ///If db is available return it to function caller
       return db;
     }
   }
 
   ///Function to delete users from the database
   Future<void> deleteUser({required String email}) async {
-    ///get our database or throw database not open
+    ///ensure the db is open
+    await _ensureDbisOpen();
+
+    ///check if local db is available
     final db = getDatabaseOrThrow();
 
     ///this will delete  account based on email address
@@ -170,7 +204,10 @@ class NotesService {
   }
 
   Future<DatabaseUser> createUser({required String email}) async {
-    ///Ge the database or throw an exception
+    ///ensure the db is open
+    await _ensureDbisOpen();
+
+    ///check if local db is available
     final db = getDatabaseOrThrow();
 
     ///check if the user with that particular email exists in the db
@@ -207,7 +244,10 @@ class NotesService {
 
   ///Fucntion to return a user given their email address
   Future<DatabaseUser> getUser({required String email}) async {
-    ///check if databse exists
+    ///ensure the db is open
+    await _ensureDbisOpen();
+
+    ///check if local db is available
     final db = getDatabaseOrThrow();
 
     ///check if the user with that particular email exists in the db
@@ -236,6 +276,10 @@ class NotesService {
   ///returns a databse of notes
   ///it requires the note owner
   Future<DatabaseNotes> createNote({required DatabaseUser noteOwner}) async {
+    ///ensure the db is open
+    await _ensureDbisOpen();
+
+    ///check if local db is available
     final db = getDatabaseOrThrow();
 
     ///ensure the user who is creating the note actually exists
@@ -271,10 +315,10 @@ class NotesService {
     );
 
     ///After creating the note , add it to the local notes list
-    _notesList.add(createdNote);
+    _internalNotesList.add(createdNote);
 
     ///as well as the the stream controller inorder to update the UI
-    _notesStreamController.add(_notesList);
+    _notesStreamController.add(_internalNotesList);
 
     ///then return the created note
     return createdNote;
@@ -283,6 +327,10 @@ class NotesService {
   ///Function to delete a note from the db
   ///requires the noteId but doesnt return anything
   Future<void> deleteSingleNote({required int id}) async {
+    ///ensure the db is open
+    await _ensureDbisOpen();
+
+    ///check if local db is available
     final db = getDatabaseOrThrow();
 
     ///if the given note id exists then we delete it
@@ -299,15 +347,19 @@ class NotesService {
     } else {
       ///if you deleted something from the db,
       ///also remove a note from the local list where that note's id == to the deleted notes id
-      _notesList.removeWhere((note) => note.noteId == id);
+      _internalNotesList.removeWhere((note) => note.noteId == id);
 
       ///update the notes controller of this change so that it updates the UI
-      _notesStreamController.add(_notesList);
+      _notesStreamController.add(_internalNotesList);
     }
   }
 
   ///Function to delete all notes
   Future<int> deleteAllNotes() async {
+    ///ensure the db is open
+    await _ensureDbisOpen();
+
+    ///check if local db is available
     final db = getDatabaseOrThrow();
 
     ///delete all notes in the table
@@ -315,10 +367,10 @@ class NotesService {
     final numberOfDeletedNotes = await db.delete(notesTable);
 
     ///Delete all notes also in the internal notes list
-    _notesList = [];
+    _internalNotesList = [];
 
     ///update the notes stream controller of this change which inturn updates the UI
-    _notesStreamController.add(_notesList);
+    _notesStreamController.add(_internalNotesList);
 
     ///then return the number of deletions as required by the deleteAllNotes Function
     return numberOfDeletedNotes;
@@ -326,6 +378,10 @@ class NotesService {
 
   ///Function to fetch a specific note
   Future<DatabaseNotes> getSingleNote({required int id}) async {
+    ///ensure the db is open
+    await _ensureDbisOpen();
+
+    ///check if local db is available
     final db = getDatabaseOrThrow();
 
     ///query the db to return a list of notes with a limit of one
@@ -346,13 +402,13 @@ class NotesService {
 
       ///since we need the notes list and notes stream controller to contain the latest information from db
       ///remove the old note from the internal notes list
-      _notesList.removeWhere((note) => note.noteId == id);
+      _internalNotesList.removeWhere((note) => note.noteId == id);
 
       ///add the new fetched note into the internal notes list
-      _notesList.add(fetchedNote);
+      _internalNotesList.add(fetchedNote);
 
       ///update the notes stream controller inorder for it to update the UI
-      _notesStreamController.add(_notesList);
+      _notesStreamController.add(_internalNotesList);
 
       ///Return the single note required by the getSingleNote function
       return fetchedNote;
@@ -361,6 +417,10 @@ class NotesService {
 
   ///Get all Notes for a specific user
   Future<Iterable<DatabaseNotes>> getAllNotes() async {
+    ///ensure the db is open
+    await _ensureDbisOpen();
+
+    ///check if local db is available
     final db = getDatabaseOrThrow();
 
     ///query the db to return a list of all notes in the db
@@ -375,6 +435,10 @@ class NotesService {
     required DatabaseNotes note,
     required String noteText,
   }) async {
+    ///ensure the db is open
+    await _ensureDbisOpen();
+
+    ///check if local db is available
     final db = getDatabaseOrThrow();
 
     //ensure the note exists before update
@@ -395,13 +459,14 @@ class NotesService {
 
       ///since we need the internal notes list and notes stream controller to contain the latest information from db
       ///Remove the old note fromt the local notes list with similar Id as the just updated note
-      _notesList.removeWhere((notet) => note.noteId == updatedNote.noteId);
+      _internalNotesList
+          .removeWhere((notet) => note.noteId == updatedNote.noteId);
 
       ///Add the newly updated note to the internal notes list
-      _notesList.add(updatedNote);
+      _internalNotesList.add(updatedNote);
 
       ///update the notes stream so that it can update the UI
-      _notesStreamController.add(_notesList);
+      _notesStreamController.add(_internalNotesList);
 
       ///Return the updated note required by the updateNote function
       return updatedNote;

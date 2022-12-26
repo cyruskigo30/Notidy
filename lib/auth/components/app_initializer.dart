@@ -1,11 +1,11 @@
 ///This file runs as soon as the app is opened
 ///inorder to start the process of initializing firebase
 import 'package:flutter/material.dart';
+import '../../widgets/circular_loading_indicator.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/verification/verify_email_screen.dart';
 import '../../home/Dashboard/notes_dashboard_screen.dart';
 import '../../services/auth/auth_service.dart';
-import '../../utils/theme/colors.dart';
 
 class AppInitializer extends StatelessWidget {
   const AppInitializer({super.key});
@@ -47,16 +47,7 @@ class AppInitializer extends StatelessWidget {
           ///otherwise if firebase  connection isn't established for one reason or another
           ///including maybe network connection, then show the user that the app is loading
           default:
-            return Scaffold(
-              body: SafeArea(
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: kPrimaryColor,
-                    semanticsLabel: 'loading',
-                  ),
-                ),
-              ),
-            );
+            return const CircularLoadingIndicator();
         }
       },
     );

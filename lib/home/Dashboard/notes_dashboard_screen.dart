@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:notidy/services/auth/auth_service.dart';
+import '../../services/auth/auth_service.dart';
 import 'dart:developer' as app show log;
 import '../../auth/screens/splash/splash_screen.dart';
 import '../../utils/theme/colors.dart';
@@ -25,12 +25,6 @@ class _NotesDashboardScreenState extends State<NotesDashboardScreen> {
           'Notidy',
         ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.search_outlined,
-            ),
-          ),
           IconButton(
             onPressed: () {},
             icon: const Icon(
@@ -115,7 +109,7 @@ class _NotesDashboardScreenState extends State<NotesDashboardScreen> {
           ),
         ],
       ),
-      body: const MainBody(),
+      body: const DashboardBody(),
       drawer: const DrawerPage(),
       bottomNavigationBar: const CustomBottomNavigation(),
     );

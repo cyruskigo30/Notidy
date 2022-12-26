@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/auth/auth_service.dart';
 import 'notes_dashboard_screen.dart';
 import '../../utils/constants/constants.dart';
 import '../../utils/theme/colors.dart';
@@ -34,7 +34,8 @@ class DrawerPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Cyrus Kigo',
+                    ///get the username and add it here
+                    '',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         // color: kLightBlueColor,
                         ),
@@ -46,8 +47,8 @@ class DrawerPage extends StatelessWidget {
               ),
             ),
             accountEmail: Text(
-              // 'cyruskigo30@gmail.com',
-              '${FirebaseAuth.instance.currentUser?.email}',
+              ///get the email From Auth Service
+              '${AuthService.initializeFirebaseAuth().currentUser?.authEmail}',
               style: Theme.of(context)
                   .textTheme
                   .bodyLarge

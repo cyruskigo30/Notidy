@@ -1,4 +1,6 @@
-///This file just checks if the user exists in firebase
+///This file does two things
+/// 1) just checks if the users email is verified in firebase
+/// 2) optionally fetch the users email from firebase
 import 'package:flutter/material.dart';
 
 ///In this file we just need the user property from firebase
@@ -13,14 +15,21 @@ class AuthUser {
   ///We need to know whether the user has verified email or not as required by login screen
   final bool isEmailVerified;
 
-  /// Const since we don't intend working any changes on this but just interested in its state
-  const AuthUser({required this.isEmailVerified});
+  ///This variable holds the email address received from firebase in auth user
+  final String? authEmail;
 
-  ///We create a factory user constructor whose job is to contact firebase
-  ///and get our local constructor a copy of the firebase auth user account verification status
-  ///The connstructor just accesses firebase User object and copies the status of the users email
-  ///then gives it to our local constructor AuthUser above
-  ///This fucntion only fetches and allows the use of verification status of the user and no other fucntionalities
-  factory AuthUser.fromFirebase(User user) =>
-      AuthUser(isEmailVerified: user.emailVerified);
+  /// Const since we don't intend working any changes on this but just interested in its state
+  const AuthUser({
+    required this.authEmail,
+    required this.isEmailVerified,
+  });
+
+  ///This factory user constructor contacts firebase
+  ///gets the status of the registered email from firebase and assigns it to the varibale isEmailVerified in the local AuthUser constructor
+  ///gets the email address of the registred user from firebase and assigns it to the varibale authEmail in the local AuthUser constructor
+  /// All through the instance user of the firebase inbuilt User object
+  factory AuthUser.fromFirebase(User user) => AuthUser(
+        isEmailVerified: user.emailVerified,
+        authEmail: user.email,
+      );
 }

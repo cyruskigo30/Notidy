@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
-
-import '../utils/constants/constants.dart';
+import 'package:notidy/utils/constants/constants.dart';
+import '../utils/theme/colors.dart';
+import 'package:flutter_svg/svg.dart';
 
 class MenuButton extends StatelessWidget {
   const MenuButton({
     Key? key,
-    required this.buttonImage,
+    required this.imageUrl,
     required this.buttonText,
     this.imageHeight,
     required this.onClick,
+    required this.buttonColor,
   }) : super(key: key);
-  final String buttonImage;
+  final String imageUrl;
   final String buttonText;
   final double? imageHeight;
+  final Color buttonColor;
   final VoidCallback onClick;
   @override
   Widget build(BuildContext context) {
@@ -23,27 +26,31 @@ class MenuButton extends StatelessWidget {
             // horizontal: kSmallWidth,
             // vertical: kSmallHeight,
             ),
-        child: Card(
-          child: Stack(
-            children: [
-              Positioned(
-                left: kSmallWidth,
-                top: kSmallHeight,
-                child: Text(
-                  buttonText,
-                  style: Theme.of(context).textTheme.bodyMedium,
+        child: Column(
+          children: [
+            Card(
+              // elevation: kDefaultElevation,
+              color: buttonColor,
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  color: buttonColor,
+                ),
+                borderRadius: BorderRadius.circular(kDefaultRadius),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SvgPicture.asset(
+                  imageUrl,
+                  color: kDarkTextColor,
+                  width: 35,
                 ),
               ),
-              Positioned(
-                right: kSmallWidth,
-                bottom: kSmallHeight,
-                child: Image.asset(
-                  buttonImage,
-                  height: 70,
-                ),
-              ),
-            ],
-          ),
+            ),
+            Text(
+              buttonText,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
         ),
       ),
     );
