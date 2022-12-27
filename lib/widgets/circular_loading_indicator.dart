@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notidy/utils/constants/constants.dart';
 import '../utils/theme/colors.dart';
 
 class CircularLoadingIndicator extends StatelessWidget {
@@ -10,10 +11,13 @@ class CircularLoadingIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: CircularProgressIndicator(
-            color: kPrimaryColor,
-            semanticsLabel: 'loading',
+        child: Padding(
+          padding: const EdgeInsets.all(kMediumHeight),
+          child: Center(
+            child: CircularProgressIndicator(
+              color: kPrimaryColor,
+              semanticsLabel: 'loading',
+            ),
           ),
         ),
       ),

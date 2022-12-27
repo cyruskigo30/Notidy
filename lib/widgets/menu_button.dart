@@ -48,7 +48,9 @@ class MenuButton extends StatelessWidget {
             ),
             Text(
               buttonText,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ],
         ),

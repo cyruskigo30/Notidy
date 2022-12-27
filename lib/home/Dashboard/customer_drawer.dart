@@ -12,8 +12,14 @@ class DrawerPage extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
+  ///To get the first part of the users email so that we can use it as a
+  ///user name, we split the email upto the @ sign and from list returned by the dart inbuilt split fucntion,
+  ///access the first item of the list of index 0
+
   @override
   Widget build(BuildContext context) {
+    final String emailName =
+        '${AuthService.initializeFirebaseAuth().currentUser?.authEmail?.split('@')[0]}';
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -34,10 +40,9 @@ class DrawerPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    ///get the username and add it here
-                    '',
+                    emailName,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        // color: kLightBlueColor,
+                          color: kDarkTextColor,
                         ),
                   ),
                   const CloseButton(

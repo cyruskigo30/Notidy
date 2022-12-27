@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notidy/utils/theme/colors.dart';
 import 'quickactions/new_note_screen.dart';
 import '../../services/auth/auth_service.dart';
 import '../../widgets/circular_loading_indicator.dart';
@@ -8,6 +9,7 @@ import '../../widgets/widget_seperator.dart';
 import '../../widgets/ad_container.dart';
 import '../../widgets/search_bar.dart';
 import '../../utils/constants/constants.dart';
+import 'widgets/empty_notes_screen.dart';
 
 class DashboardBody extends StatefulWidget {
   const DashboardBody({Key? key}) : super(key: key);
@@ -25,6 +27,12 @@ class _DashboardBodyState extends State<DashboardBody> {
   /// fecth the firebase user's email address
   String get userEmail =>
       AuthService.initializeFirebaseAuth().currentUser!.authEmail!;
+
+  ///To get the first part of the users email so that we can use it as a
+  ///user name, we split the email upto the @ sign and from list returned by the dart inbuilt split fucntion,
+  ///access the first item of the list of index 0
+  String emailName =
+      '${AuthService.initializeFirebaseAuth().currentUser?.authEmail?.split('@')[0]}';
 
   @override
 
@@ -68,7 +76,10 @@ class _DashboardBodyState extends State<DashboardBody> {
                   switch (snapshot.connectionState) {
 
                     /// When the connection state is waiting
-                    /// the stream builder returns the dashboard
+                    case ConnectionState.active:
+                      return const EmptyNotesScreen();
+
+                    /// the stream builder has no notes to show
                     /// NB the difference between future builder and stream builder is that
                     /// future builder can have a start and an end which is the connection state of done
                     /// but a stream builder doesnt have an end but just continues on without being done
@@ -83,9 +94,36 @@ class _DashboardBodyState extends State<DashboardBody> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  "Welcome to Notidy",
-                                  style: Theme.of(context).textTheme.titleSmall,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "Hello, ",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall,
+                                        ),
+
+                                        ///the first part of the email address that forms the username
+                                        Text(
+                                          " $emailName ,",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall
+                                              ?.copyWith(color: kPrimaryColor),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      "Welcome to Notidy",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                  ],
                                 ),
                                 const WidgetSeperator(),
                                 const SearchBar(),
@@ -109,7 +147,7 @@ class _DashboardBodyState extends State<DashboardBody> {
                                       buttonColor: Colors.green,
                                       buttonText: 'New Note',
                                       imageUrl:
-                                          'assets/svg/add-svgrepo-com.svg',
+                                          'assets/svg/new-file-svgrepo-com.svg',
                                       onClick: () {
                                         Navigator.pushNamed(
                                             context, NewNoteScreen.routeName);
@@ -117,9 +155,9 @@ class _DashboardBodyState extends State<DashboardBody> {
                                     ),
                                     MenuButton(
                                       buttonColor: Colors.purple,
-                                      buttonText: 'Shared',
+                                      buttonText: 'Shared Notes',
                                       imageUrl:
-                                          'assets/svg/touch-press-click-svgrepo-com.svg',
+                                          'assets/svg/share-o-svgrepo-com.svg',
                                       onClick: () {
                                         // Navigator.pushNamed(context, MachineryScreen.routeName);
                                       },
@@ -128,7 +166,7 @@ class _DashboardBodyState extends State<DashboardBody> {
                                       buttonColor: Colors.blue,
                                       buttonText: 'Categories',
                                       imageUrl:
-                                          'assets/svg/sort-arrows-svgrepo-com.svg',
+                                          'assets/svg/folder-add-svgrepo-com.svg',
                                       onClick: () {
                                         // Navigator.pushNamed(context, RecipesScreen.routeName);
                                       },
@@ -137,7 +175,7 @@ class _DashboardBodyState extends State<DashboardBody> {
                                       buttonColor: Colors.pink,
                                       buttonText: 'My Notes',
                                       imageUrl:
-                                          'assets/svg/sort-arrows-svgrepo-com (1).svg',
+                                          'assets/svg/documents-svgrepo-com.svg',
                                       onClick: () {},
                                     ),
                                   ],

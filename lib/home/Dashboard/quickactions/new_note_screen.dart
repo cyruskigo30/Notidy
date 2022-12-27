@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:notidy/home/Dashboard/quickactions/new_note_body.dart';
+import 'new_note_body.dart';
 
 class NewNoteScreen extends StatelessWidget {
   const NewNoteScreen({super.key});

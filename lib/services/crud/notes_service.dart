@@ -7,7 +7,6 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'crud_exceptions.dart';
-import 'sql_commands.dart';
 
 /// the notesService class performs all the db
 /// fucntionalities using custom dart defined database
@@ -433,7 +432,7 @@ class NotesService {
   ///Fucntion to update notes
   Future<DatabaseNotes> updateNote({
     required DatabaseNotes note,
-    required String noteText,
+    required String noteTextContent,
   }) async {
     ///ensure the db is open
     await _ensureDbisOpen();
@@ -446,7 +445,7 @@ class NotesService {
 
     ///Update the db note  details
     final updatedRow = await db.update(notesTable, {
-      noteContentColumn: noteText,
+      noteContentColumn: noteTextContent,
       isSyncedWithServerColumn: 0,
     });
 
@@ -577,3 +576,30 @@ const notesTable = 'notes';
 
 ///Delcare users table
 const userTable = 'users';
+
+///Create a users table
+///tripple quote marks allow insertion of sql commands
+///create the users table if it doesn't exist
+const createUsersTable = '''
+CREATE TABLE IF NOT EXISTS "users" (
+	"user_id"	INTEGER NOT NULL,
+	"user_email"	TEXT NOT NULL UNIQUE,
+	PRIMARY KEY("user_id" AUTOINCREMENT)
+);
+
+''';
+
+///create notes table
+///sql command
+const createNotesTable = '''
+
+CREATE TABLE  IF NOT EXISTS "notes" (
+	"note_id"	INTEGER NOT NULL,
+	"note_content"	TEXT,
+	"is_synced_with_server"	INTEGER NOT NULL DEFAULT 0,
+	"users_id"	INTEGER NOT NULL,
+	FOREIGN KEY("users_id") REFERENCES "users"("user_id"),
+	PRIMARY KEY("note_id" AUTOINCREMENT)
+);
+
+''';
