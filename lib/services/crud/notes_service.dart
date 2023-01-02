@@ -3,6 +3,7 @@
 ///delete users, create notes basically every asction the app needs
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import '../../utils/extensions/list/filter.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -21,11 +22,43 @@ class NotesService {
   ///by the stream (stream controller) and immidiately updates
   List<DatabaseNote> _internalNotesList = [];
 
+  ///if you want to be able to read all notes,
+  ///you need to first get hold of the current user who owns the notes
+  ///if that doesnt happen use an exception user should be set before reading all notes
+  DatabaseUser? _user;
+
   ///create a stream of a list of database notes (Basically a pipe of notes)
   late final StreamController<List<DatabaseNote>> _notesStreamController;
 
   ///A getter stream that gets all notes listed in the notes stream controller
-  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
+  ///we need to filter based on current user notes but stream has no filter feature so we import the custom
+  ///created filter extension that is meant to perform the filtering of a strem contents in this case
+  ///filtering the stream of all notes to produce a stream with a list of current users notes
+  Stream<List<DatabaseNote>> get allNotes =>
+      _notesStreamController.stream.filter((note) {
+        ///the current user has to be set as true by default in this fucntion and not the rest because
+        ///when sorting all user notes from the stream, we need to have the current user
+        ///but the rest of fucntionalities dont need the current user set because all they need is the note id to
+        ///update, delete and perform their functionalities
+
+        final currentUser = _user;
+
+        ///if the current user exists
+        if (currentUser != null) {
+          ///if the current user was set
+          ///we return all notes where the user id is the same as the current users id
+          ///the filter function needs to return a bool
+          return note.usersId == currentUser.userId;
+        } else {
+          ///throw crud exception that the user should be set before filtering
+          ///the notes based on user
+          throw UserShouldBeSetBeforeReadingAllNotesCrudException();
+        }
+      });
+
+  /// we need to filter all the notes based on the current user
+  /// the stream has a list of all notes but we need it srted to show the notes based on current users id
+  /// to do this we create a manual filter fucntion on our stream
 
   ///it's a bad idea to keep initializing (making new copies) of the notes service (init function) when we utilize it
   ///Instead, we can ensure the initialization of notes service happens only once (one instance) in the entire application using a singleton
@@ -53,12 +86,23 @@ class NotesService {
   ///To associate a user with a note when they create it after logging in ,
   ///We need to either create them or get them from db using their email address
 
-  Future<DatabaseUser> getOrCreateUser({required emailAddress}) async {
+  Future<DatabaseUser> getOrCreateUser({
+    required String emailAddress,
+
+    ///the current user has to be set as true by defult in this fucntion and not the rest because
+    ///when sorting all user notes from the stream, we need to have the current user
+    ///but the rest of fucntionalities dont need the current user set because all they need is the note id to
+    ///update, delete and perform their functionalities
+    bool setAsCurrentUser = true,
+  }) async {
     ///We either create the user or fetch them from db if they exist
     ///the already defined fucntion getUser requiires an email address
     ///try getting the user
     try {
       final fetchedUser = await getUser(email: emailAddress);
+      if (setAsCurrentUser) {
+        _user = fetchedUser;
+      }
 
       ///then return the user if they exist to the fucntion caller
       return fetchedUser;
@@ -67,6 +111,9 @@ class NotesService {
       ///and create a new user
     } on CouldNotFindThatUserCrudException {
       final createdUser = await createUser(email: emailAddress);
+      if (setAsCurrentUser) {
+        _user = createdUser;
+      }
 
       ///and return them to fucntion caller
       return createdUser;
@@ -434,7 +481,7 @@ class NotesService {
     return allNotes.map((noteRow) => DatabaseNote.fromRow(noteRow));
   }
 
-  ///Fucntion to update notes
+  ///Function to update notes
   Future<DatabaseNote> updateNote({
     required DatabaseNote note,
     required String noteTextContent,
@@ -449,10 +496,16 @@ class NotesService {
     await getSingleNote(id: note.noteId);
 
     ///Update the db note  details
-    final updatedRow = await db.update(notesTable, {
-      noteContentColumn: noteTextContent,
-      isSyncedWithServerColumn: 0,
-    });
+    final updatedRow = await db.update(
+        notesTable,
+        {
+          noteContentColumn: noteTextContent,
+          isSyncedWithServerColumn: 0,
+
+          ///update only the note  with similar Id as the just updated note
+        },
+        where: 'id = ?',
+        whereArgs: [note.noteId]);
 
     ///if no rows of db are updated throw an exception
     if (updatedRow == 0) {
@@ -462,7 +515,7 @@ class NotesService {
       final updatedNote = await getSingleNote(id: note.noteId);
 
       ///since we need the internal notes list and notes stream controller to contain the latest information from db
-      ///Remove the old note fromt the local notes list with similar Id as the just updated note
+      ///Remove the old note from the local notes list with similar Id as the just updated note
       _internalNotesList
           .removeWhere((notet) => note.noteId == updatedNote.noteId);
 
