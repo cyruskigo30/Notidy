@@ -19,16 +19,13 @@ class NotesService {
   ///all notes are held within an internal notes list
   ///after any manipulation is done on the list of notes, the UI is immediately notified
   ///by the stream (stream controller) and immidiately updates
-  List<DatabaseNotes> _internalNotesList = [];
+  List<DatabaseNote> _internalNotesList = [];
 
   ///create a stream of a list of database notes (Basically a pipe of notes)
-  ///a broadcast stream can be listened to more than once.
-  final _notesStreamController =
-      StreamController<List<DatabaseNotes>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
   ///A getter stream that gets all notes listed in the notes stream controller
-  Stream<List<DatabaseNotes>> get allNotesStream =>
-      _notesStreamController.stream;
+  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
   ///it's a bad idea to keep initializing (making new copies) of the notes service (init function) when we utilize it
   ///Instead, we can ensure the initialization of notes service happens only once (one instance) in the entire application using a singleton
@@ -38,8 +35,16 @@ class NotesService {
   ///This will prevent other classes from creating instances of our singleton class (NotesService)
   static final NotesService _sharedNotes = NotesService._sharedNotesInstance();
 
-  ///A static field to hold the singleton instance: This field will hold the single instance of your class.
-  NotesService._sharedNotesInstance();
+  ///A static field to hold the singleton instance:
+  ///This field will hold the single instance of your class.
+  ///broadcast allows for multiple listeners
+  NotesService._sharedNotesInstance() {
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamController.sink.add(_internalNotesList);
+      },
+    );
+  }
 
   ///A static method that gets called to get the singleton instance
   ///returns the single instance of the class (notes service), and will create the instance if it doesn't exist yet.
@@ -274,7 +279,7 @@ class NotesService {
   ///create notes function
   ///returns a databse of notes
   ///it requires the note owner
-  Future<DatabaseNotes> createNote({required DatabaseUser noteOwner}) async {
+  Future<DatabaseNote> createNote({required DatabaseUser noteOwner}) async {
     ///ensure the db is open
     await _ensureDbisOpen();
 
@@ -306,7 +311,7 @@ class NotesService {
     );
 
     ///return a database note
-    final createdNote = DatabaseNotes(
+    final createdNote = DatabaseNote(
       noteId: noteId,
       usersId: noteOwner.userId,
       noteContent: noteText,
@@ -376,7 +381,7 @@ class NotesService {
   }
 
   ///Function to fetch a specific note
-  Future<DatabaseNotes> getSingleNote({required int id}) async {
+  Future<DatabaseNote> getSingleNote({required int id}) async {
     ///ensure the db is open
     await _ensureDbisOpen();
 
@@ -397,7 +402,7 @@ class NotesService {
     } else {
       ///if a note was found
       ///return instance of the db
-      final fetchedNote = DatabaseNotes.fromRow(openedNote.first);
+      final fetchedNote = DatabaseNote.fromRow(openedNote.first);
 
       ///since we need the notes list and notes stream controller to contain the latest information from db
       ///remove the old note from the internal notes list
@@ -415,7 +420,7 @@ class NotesService {
   }
 
   ///Get all Notes for a specific user
-  Future<Iterable<DatabaseNotes>> getAllNotes() async {
+  Future<Iterable<DatabaseNote>> getAllNotes() async {
     ///ensure the db is open
     await _ensureDbisOpen();
 
@@ -426,12 +431,12 @@ class NotesService {
     final allNotes = await db.query(
       notesTable,
     );
-    return allNotes.map((noteRow) => DatabaseNotes.fromRow(noteRow));
+    return allNotes.map((noteRow) => DatabaseNote.fromRow(noteRow));
   }
 
   ///Fucntion to update notes
-  Future<DatabaseNotes> updateNote({
-    required DatabaseNotes note,
+  Future<DatabaseNote> updateNote({
+    required DatabaseNote note,
     required String noteTextContent,
   }) async {
     ///ensure the db is open
@@ -509,14 +514,14 @@ class DatabaseUser {
   int get hashCode => userId.hashCode;
 }
 
-///Let's craete a class representation of the notes database
-class DatabaseNotes {
+///A class representation of the notes database
+class DatabaseNote {
   final int noteId;
   final int usersId;
   final String noteContent;
   final bool isSyncedWithServer;
 
-  DatabaseNotes({
+  DatabaseNote({
     required this.noteId,
     required this.usersId,
     required this.noteContent,
@@ -525,7 +530,7 @@ class DatabaseNotes {
 
   ///When we connect to the database we are going to read the table rows
   ///This means that every note in that table will be represented by the below row object
-  DatabaseNotes.fromRow(Map<String, Object?> map)
+  DatabaseNote.fromRow(Map<String, Object?> map)
       : noteId = map[noteIdColumn] as int,
         usersId = map[usersIdColumn] as int,
         noteContent = map[noteContentColumn] as String,
@@ -546,7 +551,7 @@ class DatabaseNotes {
   ///we neeed to know whether two people retrieved from db are equal to each other or not
   ///covariant allows change of behoiur for input parameter so that they do not conform to signature of the parameter in superclass
   @override
-  bool operator ==(covariant DatabaseNotes other) => noteId == other.noteId;
+  bool operator ==(covariant DatabaseNote other) => noteId == other.noteId;
 
   ///When you use the == operator to compare two objects in Dart,
   ///the hashCode method is automatically called on both objects to

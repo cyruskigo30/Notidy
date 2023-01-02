@@ -9,15 +9,12 @@ class CircularLoadingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(kMediumHeight),
-          child: Center(
-            child: CircularProgressIndicator(
-              color: kPrimaryColor,
-              semanticsLabel: 'loading',
-            ),
+    return Padding(
+      padding: const EdgeInsets.all(kMediumHeight),
+      child: SafeArea(
+        child: Center(
+          child: CircularProgressIndicator(
+            color: kPrimaryColor,
           ),
         ),
       ),

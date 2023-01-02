@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:notidy/widgets/widget_seperator.dart';
+import '../../../utils/generics/get_arguements.dart';
+import '../../../widgets/widget_seperator.dart';
 import '../../../widgets/circular_loading_indicator.dart';
 import '../../../services/auth/auth_service.dart';
 import '../../../services/crud/notes_service.dart';
 import '../../../utils/constants/constants.dart';
 
-class NewNoteBody extends StatefulWidget {
-  const NewNoteBody({super.key});
-
+class CreateUpdateNoteScreen extends StatefulWidget {
+  const CreateUpdateNoteScreen({super.key});
+  static String routeName = '/create_update_note_screen';
   @override
-  State<NewNoteBody> createState() => _NewNoteBodyState();
+  State<CreateUpdateNoteScreen> createState() => _CreateUpdateNoteScreenState();
 }
 
-class _NewNoteBodyState extends State<NewNoteBody> {
+class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
   ///On launching this page, automatically create an empty note in the local db
   ///this variable holds the new note inorder to prevent creation of a new note every time the UI rebuilds
   ///it must me nullable because when launched it contains nothing
-  DatabaseNotes? _newNote;
+  DatabaseNote? _targetedNote;
 
   ///A varibale to hold the note service
   late final NotesService _notesService;
@@ -36,11 +37,29 @@ class _NewNoteBodyState extends State<NewNoteBody> {
     super.initState();
   }
 
-  ///A function to create a new note and return it
-  Future<DatabaseNotes> creaateNewNote() async {
-    ///First check if  this specific note exixts by checking the new note variable
+  ///A function to create or get an existing note and return it
+  Future<DatabaseNote> createOrGetExistingNote(BuildContext context) async {
+    ///if we were passed a note from the dashboard (a note is clicked from the list)
+    ///we will open it in the same text widget that types a new note
+    ///we need to get that optional note
+    ///The get arguement is a custom created fucntion that allows us to pass some arguements
+    ///from the note clicked
+    final widgetNote = context.getArguement<DatabaseNote>();
+
+    ///if the note exists (meaning the user tapped on the note)
+    ///assign our targeted note to the selected existing note that needs an update
+    if (widgetNote != null) {
+      _targetedNote = widgetNote;
+
+      ///This also means that the text field holding the text clicke should be repopulated with the text
+      ///that requires editing and we can target it through the text editing controller adssigned to the text field
+      _noteTextContentController.text = widgetNote.noteContent;
+      return widgetNote;
+    }
+
+    ///check if  this specific note exixts by checking the new note variable
     ///if available it,  return it
-    final existingNote = _newNote;
+    final existingNote = _targetedNote;
     if (existingNote != null) {
       return existingNote;
     }
@@ -64,7 +83,13 @@ class _NewNoteBodyState extends State<NewNoteBody> {
         await _notesService.getUser(email: currentUsersEmail);
 
     ///create a new note and assign it to the owner just retrieved from the local db
-    return await _notesService.createNote(noteOwner: localNoteOwner);
+    final newNote = await _notesService.createNote(noteOwner: localNoteOwner);
+
+    ///make the new note the targeted note by the page
+    _targetedNote = newNote;
+
+    ///by returning the new note since its a requirement of the create note function of the noteservice
+    return newNote;
   }
 
   ///since a new note is automatically created when the user gets into the new note page
@@ -72,7 +97,7 @@ class _NewNoteBodyState extends State<NewNoteBody> {
   ///and just decided to go back to dashboard or close the application
   void _deleteNoteWithEmptyContent() {
     ///A variable to hold the note created from the local db
-    final potentialNote = _newNote;
+    final potentialNote = _targetedNote;
 
     ///if the user didnt type anything (empty noteContentConroller)
     ///and the local db has a note created already since it was created when they clicked on new note,
@@ -89,7 +114,7 @@ class _NewNoteBodyState extends State<NewNoteBody> {
   ///A fucntion that automatically saves a note when the content is not empty
   void _saveNoteContainingContent() async {
     ///A variable to hold the note created from the local db
-    final acceptableNote = _newNote;
+    final acceptableNote = _targetedNote;
 
     ///text content that the user has typed
     final noteContent = _noteTextContentController.text;
@@ -110,7 +135,7 @@ class _NewNoteBodyState extends State<NewNoteBody> {
   /// its an async fucntion called only when the text in the  _noteTextContentController changes
   void _noteTextContentControllerListener() async {
     ///the current note to add content into
-    final currentNote = _newNote;
+    final currentNote = _targetedNote;
 
     ///if it is null, do nothing (this means the user has opened the note but isn't typing)
     if (currentNote == null) {
@@ -155,67 +180,73 @@ class _NewNoteBodyState extends State<NewNoteBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(kMediumWidth),
-      child: SafeArea(
-          child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Type below to create your",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const WidgetSeperator(),
-            Text(
-              "New Note",
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const WidgetSeperator(),
-            FutureBuilder(
-              /// call a database note function that creates a note and returns it
-              future: creaateNewNote(),
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-
-                  ///when the new note is created, we return
-                  case ConnectionState.done:
-
-                    ///snapshot data is of type database note
-                    ///we use it to get our notes from the snapshot as follows
-                    _newNote = snapshot.data as DatabaseNotes?;
-
-                    ///then we need to strt listening to user text changes on the notetextcontentcontroller
-                    ///we use the setup notetextcontentcontroller to start and stop the listening as needed
-                    _setupNoteTextContentControllerListener();
-
-                    ///return a textfield for user to enter their note text content
-                    return TextField(
-                      controller: _noteTextContentController,
-                      decoration: const InputDecoration(
-                        labelText: 'Create new note',
-                        hintText: 'Type your note here',
-                        prefixIcon: Icon(Icons.pending_actions_outlined),
-                      ),
-
-                      ///allow for multiline text input
-                      keyboardType: TextInputType.multiline,
-
-                      ///to create a textfiled with multtiline that expands we type we use assign null to max lines parameter
-                      maxLines: null,
-                    );
-
-                  ///otherwise we have the loading circle
-                  default:
-                    return const CircularLoadingIndicator();
-                }
-              },
-            )
-          ],
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'New Note',
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-      )),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(kMediumWidth),
+        child: SafeArea(
+            child: SizedBox(
+          height: height,
+          width: width,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Type below to create your",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const WidgetSeperator(),
+              Text(
+                "New Note",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const WidgetSeperator(),
+              FutureBuilder(
+                /// call a database note function that creates a note and returns it
+                future: createOrGetExistingNote(context),
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+
+                    ///when the new note is created, we return
+                    case ConnectionState.done:
+
+                      ///then we need to strt listening to user text changes on the notetextcontentcontroller
+                      ///we use the setup notetextcontentcontroller to start and stop the listening as needed
+                      _setupNoteTextContentControllerListener();
+
+                      ///return a textfield for user to enter their note text content
+                      return TextField(
+                        controller: _noteTextContentController,
+                        decoration: const InputDecoration(
+                          labelText: 'Create new note',
+                          hintText: 'Type your note here',
+                          prefixIcon: Icon(Icons.pending_actions_outlined),
+                        ),
+
+                        ///allow for multiline text input
+                        keyboardType: TextInputType.multiline,
+
+                        ///to create a textfiled with multtiline that expands we type we use assign null to max lines parameter
+                        maxLines: null,
+                      );
+
+                    ///otherwise we have the loading circle
+                    default:
+                      return const CircularLoadingIndicator();
+                  }
+                },
+              )
+            ],
+          ),
+        )),
+      ),
     );
   }
 }
