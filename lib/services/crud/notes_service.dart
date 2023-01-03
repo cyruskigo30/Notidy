@@ -35,6 +35,10 @@ class NotesService {
   ///created filter extension that is meant to perform the filtering of a strem contents in this case
   ///filtering the stream of all notes to produce a stream with a list of current users notes
   Stream<List<DatabaseNote>> get allNotes =>
+
+      /// we need to filter all the notes based on the current user
+      /// the stream has a list of all notes but we need it sorted to show the notes based on current users id
+      /// to do this we create a manual filter fucntion on our stream
       _notesStreamController.stream.filter((note) {
         ///the current user has to be set as true by default in this fucntion and not the rest because
         ///when sorting all user notes from the stream, we need to have the current user
@@ -55,10 +59,6 @@ class NotesService {
           throw UserShouldBeSetBeforeReadingAllNotesCrudException();
         }
       });
-
-  /// we need to filter all the notes based on the current user
-  /// the stream has a list of all notes but we need it srted to show the notes based on current users id
-  /// to do this we create a manual filter fucntion on our stream
 
   ///it's a bad idea to keep initializing (making new copies) of the notes service (init function) when we utilize it
   ///Instead, we can ensure the initialization of notes service happens only once (one instance) in the entire application using a singleton

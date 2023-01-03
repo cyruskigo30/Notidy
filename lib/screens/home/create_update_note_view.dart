@@ -24,7 +24,7 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
 
   ///A text editing controller to hold the note text as the user writes it
   /// it will sync with local db and when the user goes online, it syncs with firebase
-  late final TextEditingController _noteTextContentController;
+  late final TextEditingController _textController;
 
   ///Initialize some crucial instances
   @override
@@ -33,7 +33,7 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
     _notesService = NotesService();
 
     ///create an instance of note content controller
-    _noteTextContentController = TextEditingController();
+    _textController = TextEditingController();
     super.initState();
   }
 
@@ -53,7 +53,7 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
 
       ///This also means that the text field holding the text clicke should be repopulated with the text
       ///that requires editing and we can target it through the text editing controller adssigned to the text field
-      _noteTextContentController.text = widgetNote.noteContent;
+      _textController.text = widgetNote.noteContent;
       return widgetNote;
     }
 
@@ -73,7 +73,7 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
 
     ///The exclamation forces dart to acknowledge that the userhas an email at this point,
     ///Retrieve the current users email from firebase
-    final currentUsersEmail = currentUser.authEmail!;
+    final currentUsersEmail = currentUser.authEmail;
 
     ///Get the local db noteOwner by providing their email address
     ///The noteOwer in local db is retrieved from localdb by the getUser function within the noteservice
@@ -103,7 +103,7 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
     ///and the local db has a note created already since it was created when they clicked on new note,
     ///then delete the note from local db with the Id similar to the the one assigned to new note varibale
     ///when they got into the new note page
-    if (_noteTextContentController.text.isEmpty && potentialNote != null) {
+    if (_textController.text.isEmpty && potentialNote != null) {
       _notesService.deleteSingleNote(id: potentialNote.noteId);
     }
   }
@@ -117,7 +117,7 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
     final acceptableNote = _targetedNote;
 
     ///text content that the user has typed
-    final noteContent = _noteTextContentController.text;
+    final noteContent = _textController.text;
 
     ///if the note exists in the local db meaning it was successfully created on launching new note
     ///and the user has typed something in the note textfield which is captured by the noteContentController
@@ -143,7 +143,7 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
     }
 
     ///the current text in the _noteTextContentController
-    final currentNoteContent = _noteTextContentController.text;
+    final currentNoteContent = _textController.text;
 
     /// when the user starts typing,
     /// take the current note from db and
@@ -157,11 +157,10 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
   ///to achieve this, This fucntion  that setsup the _noteTextContentControllerListener is required
   void _setupNoteTextContentControllerListener() {
     ///remove the listener when the note owner is not typing which we know because the  _noteTextContentController doesnt register any changes in the note
-    _noteTextContentController
-        .removeListener(_noteTextContentControllerListener);
+    _textController.removeListener(_noteTextContentControllerListener);
 
     ///return the listener when the  note owner is typing which we know because the  _noteTextContentController registers new changes
-    _noteTextContentController.addListener(_noteTextContentControllerListener);
+    _textController.addListener(_noteTextContentControllerListener);
   }
 
   ///When leaving the page automatically perform the following
@@ -174,7 +173,7 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
     _saveNoteContainingContent();
 
     ///Dispose the text controller
-    _noteTextContentController.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
@@ -223,18 +222,18 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
 
                       ///return a textfield for user to enter their note text content
                       return TextField(
-                        controller: _noteTextContentController,
-                        decoration: const InputDecoration(
-                          labelText: 'Create new note',
-                          hintText: 'Type your note here',
-                          prefixIcon: Icon(Icons.pending_actions_outlined),
-                        ),
+                        controller: _textController,
 
                         ///allow for multiline text input
                         keyboardType: TextInputType.multiline,
 
                         ///to create a textfiled with multtiline that expands we type we use assign null to max lines parameter
                         maxLines: null,
+                        decoration: const InputDecoration(
+                          labelText: 'Create new note',
+                          hintText: 'Type your note here',
+                          prefixIcon: Icon(Icons.pending_actions_outlined),
+                        ),
                       );
 
                     ///otherwise we have the loading circle

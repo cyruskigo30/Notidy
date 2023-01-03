@@ -16,10 +16,14 @@ class AuthUser {
   final bool isEmailVerified;
 
   ///This variable holds the email address received from firebase in auth user
-  final String? authEmail;
+  final String authEmail;
+
+  ///every user who needs to use the app must have an id
+  final String userId;
 
   /// Const since we don't intend working any changes on this but just interested in its state
   const AuthUser({
+    required this.userId,
     required this.authEmail,
     required this.isEmailVerified,
   });
@@ -30,6 +34,7 @@ class AuthUser {
   /// All through the instance user of the firebase inbuilt User object
   factory AuthUser.fromFirebase(User user) => AuthUser(
         isEmailVerified: user.emailVerified,
-        authEmail: user.email,
+        authEmail: user.email!,
+        userId: user.uid,
       );
 }

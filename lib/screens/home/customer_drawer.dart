@@ -19,7 +19,7 @@ class DrawerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String emailName =
-        '${AuthService.initializeFirebaseAuth().currentUser?.authEmail?.split('@')[0]}';
+        '${AuthService.initializeFirebaseAuth().currentUser?.authEmail.split('@')[0]}';
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,

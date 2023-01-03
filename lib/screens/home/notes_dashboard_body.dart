@@ -26,13 +26,13 @@ class _DashboardBodyState extends State<DashboardBody> {
   ///inorder to start creating notes and associate the local db user with firebase registered user
   /// fecth the firebase user's email address
   String get userEmail =>
-      AuthService.initializeFirebaseAuth().currentUser!.authEmail!;
+      AuthService.initializeFirebaseAuth().currentUser!.authEmail;
 
   ///To get the first part of the users email so that we can use it as a
   ///user name, we split the email upto the @ sign and from list returned by the dart inbuilt split fucntion,
   ///access the first item of the list of index 0
   String emailName =
-      '${AuthService.initializeFirebaseAuth().currentUser?.authEmail?.split('@')[0]}';
+      '${AuthService.initializeFirebaseAuth().currentUser?.authEmail.split('@')[0]}';
 
   @override
 
