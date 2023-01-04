@@ -9,6 +9,5 @@ const Color kLightScaffoldBackgroundColor = Color(0XFFFFFFFF);
 const Color kLDarkScaffoldBackgroundColor = Color(0XFF022B45);
 const Color kSuccessColor = Color(0XFF08E277);
 const Color kAlertColor = Color(0XFFF95757);
-const Color kCardLightColor = Color(0XFFF8FAFC);
+const Color kCardLightColor = Colors.black87;
 const Color kCardDarkColor = Color(0xFF033B5E);
-

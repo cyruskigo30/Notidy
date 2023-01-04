@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notidy/screens/home/all_notes_view.dart';
 import '../../services/cloud/cloud_note.dart';
 import '../../services/cloud/firebase_cloud_storage.dart';
 import 'create_update_note_view.dart';
@@ -116,10 +117,13 @@ class _DashboardBodyState extends State<DashboardBody> {
                   ),
                   MenuButton(
                     buttonColor: Colors.purple,
-                    buttonText: 'Shared Notes',
+                    buttonText: 'Share Note',
                     imageUrl: 'assets/svg/share-o-svgrepo-com.svg',
                     onClick: () {
-                      // Navigator.pushNamed(context, RecipesScreen.routeName);
+                      Navigator.pushNamed(
+                        context,
+                        CreateUpdateNoteScreen.routeName,
+                      );
                     },
                   ),
                   MenuButton(
@@ -134,7 +138,12 @@ class _DashboardBodyState extends State<DashboardBody> {
                     buttonColor: Colors.pink,
                     buttonText: 'My Notes',
                     imageUrl: 'assets/svg/documents-svgrepo-com.svg',
-                    onClick: () {},
+                    onClick: () {
+                      Navigator.pushNamed(
+                        context,
+                        AllNotesView.routeName,
+                      );
+                    },
                   ),
                 ],
               ),
@@ -155,6 +164,7 @@ class _DashboardBodyState extends State<DashboardBody> {
                     /// NB the difference between future builder and stream builder is that
                     /// future builder can have a start and an end which is the connection state of done
                     /// but a stream builder doesnt have an end but just continues on without being done
+
                     case ConnectionState.active:
 
                       ///if the snapshot has data (there is data in the database)

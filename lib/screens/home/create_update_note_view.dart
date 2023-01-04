@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../services/cloud/firebase_cloud_storage.dart';
 import '../../services/cloud/cloud_note.dart';
+import '../../utils/dialogs/cannot_share_empty_note_dialog.dart';
 import '../../utils/generics/get_arguements.dart';
 import '../../utils/widgets/widget_seperator.dart';
 import '../../utils/widgets/circular_loading_indicator.dart';
@@ -186,6 +188,23 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
           'New Note',
           style: Theme.of(context).textTheme.titleMedium,
         ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              final currentText = _textController.text;
+
+              ///if there was no note opened or the new note textfield is empty
+              ///show the cannot share empty note dialog
+              if (_targetedNote == null || currentText.isEmpty) {
+                await showCannotShareEmptyNote(context);
+              } else {
+                ///if there is a typed note or a note was opened
+                Share.share(currentText);
+              }
+            },
+            icon: const Icon(Icons.share_outlined),
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(kMediumWidth),
@@ -202,8 +221,8 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
               ),
               const WidgetSeperator(),
               Text(
-                "New Note",
-                style: Theme.of(context).textTheme.titleLarge,
+                "New note is automatically saved",
+                style: Theme.of(context).textTheme.titleSmall,
               ),
               const WidgetSeperator(),
               FutureBuilder(
@@ -229,7 +248,7 @@ class _CreateUpdateNoteScreenState extends State<CreateUpdateNoteScreen> {
                         ///to create a textfiled with multtiline that expands we type we use assign null to max lines parameter
                         maxLines: null,
                         decoration: const InputDecoration(
-                          labelText: 'Create new note',
+                          labelText: 'Create / Update Note',
                           hintText: 'Type your note here',
                           prefixIcon: Icon(Icons.pending_actions_outlined),
                         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../screens/home/all_notes_view.dart';
 import '../../screens/home/create_update_note_view.dart';
 import '../../screens/auth/components/app_initializer.dart';
 import '../../screens/auth/screens/verification/verify_email_screen.dart';
@@ -16,4 +17,5 @@ final Map<String, WidgetBuilder> routes = {
   AppInitializer.routeName: (context) => const AppInitializer(),
   VerifyEmailScreen.routeName: (context) => const VerifyEmailScreen(),
   CreateUpdateNoteScreen.routeName: (context) => const CreateUpdateNoteScreen(),
+  AllNotesView.routeName: (context) => const AllNotesView(),
 };

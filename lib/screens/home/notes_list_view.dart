@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notidy/utils/theme/colors.dart';
 import '../../services/cloud/cloud_note.dart';
 import '../../../utils/dialogs/delete_dialog.dart';
 
@@ -54,9 +55,11 @@ class NotesListView extends StatelessWidget {
                 onDelete(currentNote);
               }
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.delete,
+              color: kPrimaryColor,
             ),
+            tooltip: 'Delete Note',
           ),
         );
       },
