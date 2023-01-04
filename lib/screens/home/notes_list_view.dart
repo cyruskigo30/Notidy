@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../services/crud/notes_service.dart';
+import '../../services/cloud/cloud_note.dart';
 import '../../../utils/dialogs/delete_dialog.dart';
 
 /// A function in notes view that we can use as callback which when it's called
 /// tells the notes view of which note has been clicked inorder to perform various actions on that
 /// specific note like delete and update It accepts nothing but returns a note
-typedef NoteCallBack = void Function(DatabaseNote note);
+typedef NoteCallBack = void Function(CloudNote note);
 
 ///this file isonly interested in  the list of notes to display
 class NotesListView extends StatelessWidget {
@@ -15,7 +15,7 @@ class NotesListView extends StatelessWidget {
     required this.onDelete,
     required this.onClick,
   });
-  final List<DatabaseNote> notes;
+  final Iterable<CloudNote> notes;
 
   ///declare custom delete note callback fucntion
   ///since the note call back function returns a note
@@ -30,7 +30,7 @@ class NotesListView extends StatelessWidget {
       shrinkWrap: true,
       itemCount: notes.length,
       itemBuilder: (context, index) {
-        final currentNote = notes[index];
+        final currentNote = notes.elementAt(index);
         return ListTile(
           ///on tapping the list tile, return the note clicked
 

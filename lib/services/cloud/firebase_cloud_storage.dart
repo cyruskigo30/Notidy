@@ -38,7 +38,7 @@ class FirebaseCloudStorage {
   ///A strem iterable that helps updates the notes list UI with the list of all notes
   ///should be of type of the custom cloud note already defined
 
-  Stream<Iterable<CloudNote>> allNotes({required String ownerUserId}) =>
+  Stream<Iterable<CloudNote>> allNotes({required String userId}) =>
 
       ///snapshot allows you to subscribe to the data from cloud storage as it changes (live)
       notes.snapshots().map(
@@ -50,41 +50,42 @@ class FirebaseCloudStorage {
 
                 ///but give only documents of the specified user based on their id
                 ///which is arequirement of this stream in the first place
-                .where((note) => note.ownerUserId == ownerUserId),
+                .where((note) => note.ownerUserId == userId),
           );
 
-  ///A fucntion htat creates new notes
-  void createNewNotes({required String ownerUserId}) async {
+  ///A fucntion that creates and returns a new note
+  Future<CloudNote> createNewNote({required String userId}) async {
     ///add accepts objects with keys and values (documents ie fields and values)
     ///add the fields (documents)
-    await notes.add({
-      ownerUserIdFieldName: ownerUserId,
+    final document = await notes.add({
+      ownerUserIdFieldName: userId,
       textFieldName: '',
     });
+
+    ///get the snapshot of the actual document
+    final fetchedNote = await document.get();
+    return CloudNote(
+      documentId: fetchedNote.id,
+      ownerUserId: userId,
+      noteContent: '',
+    );
   }
 
   ///A function to get all notes of a specific user
   ///which requires an users Id and returns an iterable of type of the custom cloudNote
-  Future<Iterable<CloudNote>> getUserNotes(
-      {required String ownerUserId}) async {
+  Future<Iterable<CloudNote>> getNotes({required String userId}) async {
     ///do a search inside the notes collection to get all notes of  specific user
     try {
       return await notes
           .where(
             ownerUserIdFieldName,
-            isEqualTo: ownerUserId,
+            isEqualTo: userId,
           )
           .get()
           .then((value) => value.docs.map(
-                (doc) {
-                  ///return a cloudnote based on the custom created cloudNote class template
-                  return CloudNote(
-                    documentId: doc.id,
-                    ownerUserId: doc.data()[ownerUserIdFieldName] as String,
-                    noteContent: doc.data()[textFieldName] as String,
-                  );
-                },
-              ));
+
+              ///return a cloudnote based on the custom created cloudNote class template
+              (doc) => CloudNote.fromSnapshot(doc)));
     } catch (e) {
       ///if for some reason you cant get the notes throw an exception
       throw CouldNotGetAllNotesException();
